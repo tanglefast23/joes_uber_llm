@@ -1781,10 +1781,16 @@ Best opportunity: TICKER because [reason]`;
                 body: formData
             });
             const result = await response.json();
+
+            // Handle HTTP errors (FastAPI returns {detail: ...} for errors)
+            if (!response.ok) {
+                return { success: false, error: result.detail || `HTTP ${response.status}` };
+            }
+
             return result;
         } catch (err) {
             console.error('Aggregator error:', err);
-            return null;
+            return { success: false, error: err.message || 'Network error' };
         }
     }
 

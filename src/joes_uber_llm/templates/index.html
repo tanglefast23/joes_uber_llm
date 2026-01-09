@@ -207,6 +207,18 @@
             </button>
         </div>
 
+        <!-- Debated Uber Answer Toggle -->
+        <div class="p-4 border-t border-neutral-800">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-neutral-300">Debated Uber Answer</span>
+                <button type="button" id="debated-mode-toggle" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-neutral-700" role="switch" aria-checked="false">
+                    <span class="sr-only">Enable Debated Uber Answer</span>
+                    <span id="debated-mode-knob" class="inline-block h-4 w-4 transform rounded-full bg-neutral-400 transition-transform translate-x-1"></span>
+                </button>
+            </div>
+            <p class="text-xs text-neutral-500 mt-2">LLMs will challenge each other on their answer before consolidating an answer (takes much longer)</p>
+        </div>
+
         <!-- Connection Status Section -->
         <div class="p-4 pb-8 border-t border-neutral-800">
             <p class="text-xs text-neutral-500 mb-3">Connection Status <span class="text-neutral-600">(click to disconnect)</span></p>
@@ -341,6 +353,9 @@
 
     // Financial Mode state (declared early for use in handlers)
     let financialModeEnabled = localStorage.getItem('financialModeEnabled') === 'true';
+
+    // Debated Uber Answer Mode state
+    let debatedModeEnabled = localStorage.getItem('debatedModeEnabled') === 'true';
 
     // Financial analysis prompt template
     const FINANCIAL_PROMPT_TEMPLATE = `You are a Senior Portfolio Manager with access to current market data. Analyze these stocks: [stocks]
@@ -1723,6 +1738,35 @@ Best opportunity: TICKER because [reason]`;
 
     // Initialize Financial Mode UI
     updateFinancialModeUI();
+
+    // Debated Uber Answer Mode toggle
+    const debatedModeToggle = document.getElementById('debated-mode-toggle');
+    const debatedModeKnob = document.getElementById('debated-mode-knob');
+
+    function updateDebatedModeUI() {
+        if (debatedModeEnabled) {
+            debatedModeToggle.classList.remove('bg-neutral-700');
+            debatedModeToggle.classList.add('bg-green-500');
+            debatedModeKnob.classList.remove('translate-x-1', 'bg-neutral-400');
+            debatedModeKnob.classList.add('translate-x-6', 'bg-white');
+            debatedModeToggle.setAttribute('aria-checked', 'true');
+        } else {
+            debatedModeToggle.classList.remove('bg-green-500');
+            debatedModeToggle.classList.add('bg-neutral-700');
+            debatedModeKnob.classList.remove('translate-x-6', 'bg-white');
+            debatedModeKnob.classList.add('translate-x-1', 'bg-neutral-400');
+            debatedModeToggle.setAttribute('aria-checked', 'false');
+        }
+    }
+
+    debatedModeToggle.addEventListener('click', function() {
+        debatedModeEnabled = !debatedModeEnabled;
+        localStorage.setItem('debatedModeEnabled', debatedModeEnabled);
+        updateDebatedModeUI();
+    });
+
+    // Initialize Debated Mode UI
+    updateDebatedModeUI();
 
     // Sidebar button event listeners
     const sidebarCloseBtn = document.getElementById('sidebar-close-btn');

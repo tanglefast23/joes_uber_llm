@@ -1160,8 +1160,9 @@ Best opportunity: TICKER because [reason]`;
                     // Call aggregator with final responses (revised if debate happened)
                     const aggregatorResult = await callAggregator(message, finalResponses);
 
-                    // Find the uber answer frame and update it
-                    const uberFrame = chatContainer.querySelector('.uber-answer-frame');
+                    // Find the LAST uber answer frame (the one we just added) and update it
+                    const uberFrames = chatContainer.querySelectorAll('.uber-answer-frame');
+                    const uberFrame = uberFrames[uberFrames.length - 1];
                     if (uberFrame) {
                         const uberSpinner = uberFrame.querySelector('.uber-loading-spinner');
                         const uberContent = uberFrame.querySelector('.uber-response-content');

@@ -411,8 +411,7 @@ STOCK 1: TICKER - Company Name
 • 12-Month Target: **$XXX** (XX% upside/downside)
 
 ⚡ VERDICT
-• Investment Score: **X/10** (1-3=Sell, 4-6=Hold, 7-10=Buy)
-• Rating: **Buy/Hold/Sell** (MUST match the score above)
+• Rating: **BUY** or **HOLD** or **SELL** (score 7-10=Buy, 4-6=Hold, 1-3=Sell)
 • Confidence: **High/Medium/Low**
 
 🏢 BUSINESS OVERVIEW
@@ -1413,6 +1412,11 @@ Best opportunity: TICKER because [reason]`;
         html = html.replace(/•\s*Rating:\s*\*{0,2}[^*\n]+\*{0,2}/gi, '');
         html = html.replace(/•\s*Score:\s*\*{0,2}[^*\n]+\*{0,2}/gi, '');
         html = html.replace(/•\s*Investment\s*Score:\s*\*{0,2}[^*\n]+\*{0,2}/gi, '');
+
+        // Remove the rating scale explanation "(1-3=Sell, 4-6=Hold, 7-10=Buy)" and similar patterns
+        html = html.replace(/\(1-3\s*=\s*Sell,?\s*4-6\s*=\s*Hold,?\s*7-10\s*=\s*Buy\)\s*(<br>)?/gi, '');
+        html = html.replace(/\(Score:?\s*1-3\s*=\s*Sell[^)]*\)\s*(<br>)?/gi, '');
+        html = html.replace(/1-3\s*=\s*Sell,?\s*4-6\s*=\s*Hold,?\s*7-10\s*=\s*Buy\s*(<br>)?/gi, '');
 
         // Remove duplicate stock name lines (e.g., "MU - MICRON TECHNOLOGY" appearing after header)
         // These appear as standalone lines with just ticker and company name

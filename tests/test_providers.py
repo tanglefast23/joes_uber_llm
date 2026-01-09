@@ -113,7 +113,7 @@ class TestGoogleProvider:
         """Test available models list."""
         provider = GoogleProvider()
         models = provider.available_models
-        assert "gemini-1.5-flash" in models
+        assert "gemini-1.5-flash-002" in models
 
     @pytest.mark.asyncio
     async def test_chat_invalid_model(self) -> None:
@@ -133,15 +133,12 @@ class TestGoogleProvider:
         mock_response = MagicMock()
         mock_response.text = "Hello! How can I help you?"
 
-        mock_chat = MagicMock()
-        mock_chat.send_message.return_value = mock_response
+        mock_client = MagicMock()
+        mock_client.models.generate_content.return_value = mock_response
 
-        mock_model = MagicMock()
-        mock_model.start_chat.return_value = mock_chat
+        with patch("joes_uber_llm.providers.google.genai.Client") as mock_client_cls:
+            mock_client_cls.return_value = mock_client
 
-        with patch("joes_uber_llm.providers.google.genai") as mock_genai:
-            mock_genai.GenerativeModel.return_value = mock_model
-
-            result = await provider.chat(messages, "gemini-1.5-flash", "test-key")
+            result = await provider.chat(messages, "gemini-1.5-flash-002", "test-key")
 
             assert result == "Hello! How can I help you?"

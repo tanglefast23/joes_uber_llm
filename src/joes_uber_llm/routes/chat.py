@@ -115,7 +115,7 @@ async def chat(
         )
 
     session_id = get_or_create_session(x_session_id)
-    conversation = conversations[session_id]
+    conversation = get_provider_conversation(session_id, provider)
 
     # Add user message to conversation
     user_msg = Message(role="user", content=message)

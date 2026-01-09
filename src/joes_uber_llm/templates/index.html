@@ -95,6 +95,12 @@
                         class="api-key-input w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
                 </div>
 
+                <!-- Remember API Keys Checkbox -->
+                <div class="flex items-center mt-4 pt-3 border-t border-neutral-700">
+                    <input type="checkbox" id="remember-api-keys" class="w-4 h-4 rounded bg-neutral-700 border-neutral-600 text-green-500 focus:ring-green-500 focus:ring-offset-neutral-800">
+                    <label for="remember-api-keys" class="ml-2 text-sm text-neutral-400 cursor-pointer">Remember API keys</label>
+                </div>
+
             </div>
         </div>
 
@@ -207,12 +213,12 @@
             </button>
         </div>
 
-        <!-- Debated Uber Answer Toggle -->
+        <!-- Super Uber Answer Toggle -->
         <div class="p-4 border-t border-neutral-800">
             <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-neutral-300">Debated Uber Answer</span>
+                <span class="text-sm font-medium text-neutral-300">Super Uber Answer</span>
                 <button type="button" id="debated-mode-toggle" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-neutral-700" role="switch" aria-checked="false">
-                    <span class="sr-only">Enable Debated Uber Answer</span>
+                    <span class="sr-only">Enable Super Uber Answer</span>
                     <span id="debated-mode-knob" class="inline-block h-4 w-4 transform rounded-full bg-neutral-400 transition-transform translate-x-1"></span>
                 </button>
             </div>
@@ -354,7 +360,7 @@
     // Financial Mode state (declared early for use in handlers)
     let financialModeEnabled = localStorage.getItem('financialModeEnabled') === 'true';
 
-    // Debated Uber Answer Mode state
+    // Super Uber Answer Mode state
     let debatedModeEnabled = localStorage.getItem('debatedModeEnabled') === 'true';
 
     // Financial analysis prompt template
@@ -427,8 +433,24 @@ PORTFOLIO SUMMARY
 
 Best opportunity: TICKER because [reason]`;
 
-    // Load saved API keys from localStorage
-    const apiKeys = JSON.parse(localStorage.getItem('apiKeys') || '{}');
+    // Check if "Remember API keys" is enabled
+    const rememberApiKeys = localStorage.getItem('rememberApiKeys') === 'true';
+
+    // Load saved API keys from localStorage only if remember is enabled
+    const apiKeys = rememberApiKeys ? JSON.parse(localStorage.getItem('apiKeys') || '{}') : {};
+
+    // Initialize "Remember API keys" checkbox state
+    const rememberApiKeysCheckbox = document.getElementById('remember-api-keys');
+    if (rememberApiKeysCheckbox) {
+        rememberApiKeysCheckbox.checked = rememberApiKeys;
+    }
+
+    // Function to save API keys (only if remember is enabled)
+    function saveApiKeysIfRemembered() {
+        if (rememberApiKeysCheckbox && rememberApiKeysCheckbox.checked) {
+            localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+        }
+    }
 
     // Sidebar visibility (defined early for use in form handlers)
     const sidebar = document.getElementById('sidebar');
@@ -527,7 +549,7 @@ Best opportunity: TICKER because [reason]`;
 
             // Delete the API key
             delete apiKeys[provider];
-            localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+            saveApiKeysIfRemembered();
 
             // Clear the input field
             const input = document.getElementById(`${provider}-key`);
@@ -601,7 +623,7 @@ Best opportunity: TICKER because [reason]`;
                 statusEl.classList.remove('bg-green-500');
                 statusEl.classList.add('bg-gray-600');
             }
-            localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+            saveApiKeysIfRemembered();
 
             // Update connection status and provider highlighting
             updateConnectionStatus();
@@ -620,7 +642,7 @@ Best opportunity: TICKER because [reason]`;
                     labelEl.classList.remove('text-green-400');
                     labelEl.classList.add('text-gray-300');
                     delete apiKeys[provider];
-                    localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+                    saveApiKeysIfRemembered();
                     updateConnectionStatus();
                     this.blur();
                     return;
@@ -647,7 +669,7 @@ Best opportunity: TICKER because [reason]`;
                         labelEl.classList.add('text-green-400');
                         this.placeholder = 'Hit Enter to Send';
                         apiKeys[provider] = key;
-                        localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+                        saveApiKeysIfRemembered();
                         statusEl.classList.remove('bg-gray-600');
                         statusEl.classList.add('bg-green-500');
                     } else {
@@ -657,7 +679,7 @@ Best opportunity: TICKER because [reason]`;
                         this.placeholder = 'Invalid Key';
                         this.value = '';
                         delete apiKeys[provider];
-                        localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+                        saveApiKeysIfRemembered();
                         statusEl.classList.remove('bg-green-500');
                         statusEl.classList.add('bg-gray-600');
                     }
@@ -821,8 +843,8 @@ Best opportunity: TICKER because [reason]`;
 
     // Create Uber Answer placeholder with spinner
     function createUberPlaceholder(isDebated = false) {
-        const title = isDebated ? 'Debated Uber Answer' : 'Uber Answer';
-        const subtitle = isDebated ? 'Synthesized from debated responses' : 'Synthesized from all responses';
+        const title = isDebated ? 'Super Uber Answer' : 'Uber Answer';
+        const subtitle = isDebated ? 'Synthesized from super debated responses' : 'Synthesized from all responses';
         const gradientClass = isDebated
             ? 'bg-gradient-to-br from-purple-500 to-pink-600 shadow-purple-500/30'
             : 'bg-gradient-to-br from-amber-500 to-orange-600 shadow-amber-500/30';
@@ -1885,7 +1907,7 @@ Best opportunity: TICKER because [reason]`;
     // Initialize Financial Mode UI
     updateFinancialModeUI();
 
-    // Debated Uber Answer Mode toggle
+    // Super Uber Answer Mode toggle
     const debatedModeToggle = document.getElementById('debated-mode-toggle');
     const debatedModeKnob = document.getElementById('debated-mode-knob');
 
@@ -1911,8 +1933,21 @@ Best opportunity: TICKER because [reason]`;
         updateDebatedModeUI();
     });
 
-    // Initialize Debated Mode UI
+    // Initialize Super Uber Answer Mode UI
     updateDebatedModeUI();
+
+    // Remember API Keys checkbox handler
+    if (rememberApiKeysCheckbox) {
+        rememberApiKeysCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                localStorage.setItem('rememberApiKeys', 'true');
+                localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+            } else {
+                localStorage.removeItem('rememberApiKeys');
+                localStorage.removeItem('apiKeys');
+            }
+        });
+    }
 
     // Sidebar button event listeners
     const sidebarCloseBtn = document.getElementById('sidebar-close-btn');

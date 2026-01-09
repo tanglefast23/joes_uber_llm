@@ -68,12 +68,16 @@ class AnthropicProvider(BaseProvider):
                 anthropic_messages.append({"role": msg.role, "content": msg.content})
 
         try:
-            response = client.messages.create(
-                model=model,
-                max_tokens=4096,
-                messages=anthropic_messages,
-                system=system_content if system_content else None,
-            )
+            # Build request kwargs - only include system if it has content
+            request_kwargs = {
+                "model": model,
+                "max_tokens": 4096,
+                "messages": anthropic_messages,
+            }
+            if system_content:
+                request_kwargs["system"] = system_content
+
+            response = client.messages.create(**request_kwargs)
             if response.content and hasattr(response.content[0], "text"):
                 return response.content[0].text
             raise RuntimeError("Anthropic returned empty response")

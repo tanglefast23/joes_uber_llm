@@ -1,0 +1,1641 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="relative h-screen">
+    <!-- Left Sidebar - Settings (overlay) -->
+    <div id="sidebar" class="absolute left-0 top-0 h-full z-50 bg-neutral-900 flex flex-col border-r border-neutral-800 transition-transform duration-300 w-72 overflow-y-auto shadow-2xl -translate-x-full">
+        <!-- Sidebar Header with Close Button -->
+        <div class="flex items-center justify-between p-4 border-b border-neutral-800">
+            <span class="text-lg font-semibold text-neutral-200">Settings</span>
+            <button id="sidebar-close-btn" class="text-neutral-500 hover:text-white transition-colors p-1 rounded hover:bg-neutral-800" title="Close sidebar">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- API Keys Section Toggle -->
+        <button id="sidebar-toggle" class="flex items-center gap-3 p-4 hover:bg-neutral-800 transition-colors border-b border-neutral-800">
+            <div class="w-6 h-6 flex items-center justify-center rounded bg-neutral-800 hover:bg-neutral-700 transition-colors">
+                <svg id="sidebar-toggle-icon" class="w-4 h-4 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+            <span id="sidebar-title" class="text-lg font-semibold text-neutral-300 whitespace-nowrap">API Keys</span>
+        </button>
+
+        <!-- Sidebar Content -->
+        <div id="sidebar-content">
+            <div class="p-4">
+                <p class="text-xs text-neutral-500 mb-4">Keys are stored locally in your browser</p>
+
+                <!-- OpenAI API Key -->
+                <div class="mb-4">
+                    <label class="flex items-center justify-between text-sm font-medium text-neutral-400 mb-1">
+                        <span class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="openai-status"></span>
+                            OpenAI
+                        </span>
+                        <button type="button" class="eye-toggle text-neutral-500 hover:text-neutral-300" data-target="openai-key">
+                            <svg class="w-4 h-4 eye-closed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                            </svg>
+                            <svg class="w-4 h-4 eye-open hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </label>
+                    <input type="password" id="openai-key" placeholder="Hit Enter to Send"
+                        data-provider="openai"
+                        class="api-key-input w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                </div>
+
+                <!-- Anthropic API Key -->
+                <div class="mb-4">
+                    <label class="flex items-center justify-between text-sm font-medium text-neutral-400 mb-1">
+                        <span class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="anthropic-status"></span>
+                            Anthropic
+                        </span>
+                        <button type="button" class="eye-toggle text-neutral-500 hover:text-neutral-300" data-target="anthropic-key">
+                            <svg class="w-4 h-4 eye-closed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                            </svg>
+                            <svg class="w-4 h-4 eye-open hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </label>
+                    <input type="password" id="anthropic-key" placeholder="Hit Enter to Send"
+                        data-provider="anthropic"
+                        class="api-key-input w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                </div>
+
+                <!-- Google API Key -->
+                <div class="mb-4">
+                    <label class="flex items-center justify-between text-sm font-medium text-neutral-400 mb-1">
+                        <span class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="google-status"></span>
+                            Google
+                        </span>
+                        <button type="button" class="eye-toggle text-neutral-500 hover:text-neutral-300" data-target="google-key">
+                            <svg class="w-4 h-4 eye-closed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                            </svg>
+                            <svg class="w-4 h-4 eye-open hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </label>
+                    <input type="password" id="google-key" placeholder="Hit Enter to Send"
+                        data-provider="google"
+                        class="api-key-input w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                </div>
+
+            </div>
+        </div>
+
+        <!-- LLM Model Selection Section -->
+        <button id="models-toggle" class="flex items-center gap-3 p-4 hover:bg-neutral-800 transition-colors border-b border-neutral-800">
+            <div class="w-6 h-6 flex items-center justify-center rounded bg-neutral-800 hover:bg-neutral-700 transition-colors">
+                <svg id="models-toggle-icon" class="w-4 h-4 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+            <span class="text-lg font-semibold text-neutral-300 whitespace-nowrap">LLM Model Selection</span>
+        </button>
+
+        <!-- Models Content -->
+        <div id="models-content">
+            <div class="p-4 flex flex-col">
+                <p class="text-xs text-neutral-500 mb-4">Select model for each provider</p>
+
+                <!-- OpenAI Model -->
+                <div class="mb-3 p-2 rounded-md provider-row" data-provider="openai">
+                    <label class="flex items-center text-sm font-medium text-neutral-400 mb-1">
+                        <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="openai-model-status"></span>
+                        OpenAI
+                    </label>
+                    <select id="openai-model" data-provider="openai" class="model-select w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                        {% for m in provider_models['openai'] %}
+                        <option value="{{ m }}">{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Anthropic Model -->
+                <div class="mb-3 p-2 rounded-md provider-row" data-provider="anthropic">
+                    <label class="flex items-center text-sm font-medium text-neutral-400 mb-1">
+                        <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="anthropic-model-status"></span>
+                        Anthropic
+                    </label>
+                    <select id="anthropic-model" data-provider="anthropic" class="model-select w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                        {% for m in provider_models['anthropic'] %}
+                        <option value="{{ m }}">{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Google Model -->
+                <div class="mb-3 p-2 rounded-md provider-row" data-provider="google">
+                    <label class="flex items-center text-sm font-medium text-neutral-400 mb-1">
+                        <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="google-model-status"></span>
+                        Google
+                    </label>
+                    <select id="google-model" data-provider="google" class="model-select w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                        {% for m in provider_models['google'] %}
+                        <option value="{{ m }}">{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- LLM Master Aggregator Section -->
+        <button id="aggregator-toggle" class="flex items-center gap-3 p-4 hover:bg-neutral-800 transition-colors border-t border-neutral-800">
+            <div class="w-6 h-6 flex items-center justify-center rounded bg-neutral-800 hover:bg-neutral-700 transition-colors">
+                <svg id="aggregator-toggle-icon" class="w-4 h-4 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+            <span class="text-lg font-semibold text-neutral-300 whitespace-nowrap">Uber Answer</span>
+        </button>
+
+        <!-- Aggregator Content -->
+        <div id="aggregator-content">
+            <div class="p-4 flex flex-col">
+                <p class="text-xs text-neutral-500 mb-3">Select which LLM will aggregate and synthesize all responses into one superior answer</p>
+
+                <div class="mb-3">
+                    <label class="flex items-center text-sm font-medium text-neutral-400 mb-2">
+                        <input type="checkbox" id="aggregator-enabled" class="mr-2 accent-neutral-500">
+                        Enable Uber Answer
+                    </label>
+                </div>
+
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-neutral-400 mb-1">Aggregator LLM</label>
+                    <select id="aggregator-provider" class="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic" selected>Anthropic</option>
+                        <option value="google">Google</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-neutral-400 mb-1">Model</label>
+                    <select id="aggregator-model" class="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                        {% for m in provider_models['anthropic'] %}
+                        <option value="{{ m }}">{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <p class="text-xs text-neutral-500 mt-2">The aggregator will rate each response, detect hallucinations, and combine the best answers.</p>
+            </div>
+        </div>
+
+        <!-- Financial Mode Toggle -->
+        <div class="flex items-center justify-between p-4 border-t border-neutral-800">
+            <span class="text-sm font-medium text-neutral-300">Financial Mode</span>
+            <button type="button" id="financial-mode-toggle" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-neutral-700" role="switch" aria-checked="false">
+                <span class="sr-only">Enable Financial Mode</span>
+                <span id="financial-mode-knob" class="inline-block h-4 w-4 transform rounded-full bg-neutral-400 transition-transform translate-x-1"></span>
+            </button>
+        </div>
+
+        <!-- Connection Status Section -->
+        <div class="p-4 pb-8 border-t border-neutral-800">
+            <p class="text-xs text-neutral-500 mb-3">Connection Status <span class="text-neutral-600">(click to disconnect)</span></p>
+
+            <div class="space-y-2">
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full mr-2 bg-red-500" id="openai-connection"></span>
+                    <span class="text-sm text-neutral-400 connection-label" id="openai-connection-label" data-provider="openai">OpenAI</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full mr-2 bg-red-500" id="anthropic-connection"></span>
+                    <span class="text-sm text-neutral-400 connection-label" id="anthropic-connection-label" data-provider="anthropic">Anthropic</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full mr-2 bg-red-500" id="google-connection"></span>
+                    <span class="text-sm text-neutral-400 connection-label" id="google-connection-label" data-provider="google">Google</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Main Chat Area (full width, fixed position) -->
+    <div class="w-full h-full flex flex-col bg-neutral-900">
+        <!-- Welcome Screen with Centered Input -->
+        <div id="welcome-screen" class="flex-1 flex flex-col items-center justify-center">
+            <h1 class="text-3xl font-semibold text-white mb-8">1 question. 1 uber answer.</h1>
+            <!-- Centered Chat Input -->
+            <div class="w-full max-w-2xl px-4">
+                <form id="chat-form" class="w-full">
+                    <div class="bg-neutral-800 rounded-2xl px-4 py-3 border border-neutral-700">
+                        <textarea name="message" id="message-input" rows="1" placeholder="Ask anything"
+                            class="w-full bg-transparent text-white placeholder-gray-500 focus:outline-none resize-none text-base"
+                            required></textarea>
+                        <div class="flex items-center justify-between mt-2">
+                            <div class="flex items-center gap-3">
+                                <!-- Settings Button -->
+                                <button type="button" id="settings-btn" class="text-gray-400 hover:text-white transition-colors" title="Settings">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </button>
+                                <!-- New Chat Button -->
+                                <button type="button" class="new-chat-btn text-gray-400 hover:text-white transition-colors" title="New Chat">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <button type="submit" id="send-btn" class="bg-white text-black font-medium py-2 px-4 rounded-full hover:bg-gray-200 transition-colors flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Chat Messages (hidden initially, shown when conversation starts) -->
+        <div id="chat-messages" class="hidden flex-1 overflow-y-auto py-4">
+            <div class="max-w-3xl mx-auto px-4 space-y-6">
+            </div>
+        </div>
+
+        <!-- Processing Indicator -->
+        <div id="processing-indicator" class="hidden px-4 py-6">
+            <div class="flex flex-col items-center justify-center gap-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0ms;"></div>
+                    <div class="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 150ms;"></div>
+                    <div class="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 300ms;"></div>
+                </div>
+                <p class="text-gray-400 text-sm font-medium">Processing. Please wait.</p>
+            </div>
+        </div>
+
+        <!-- Error Display -->
+        <div id="error-container" class="hidden px-4">
+            <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg max-w-4xl mx-auto">
+                <span id="error-message"></span>
+                <button onclick="document.getElementById('error-container').classList.add('hidden')" class="float-right text-red-200 hover:text-white">&times;</button>
+            </div>
+        </div>
+
+        <!-- Bottom Chat Input (shown when conversation is active) -->
+        <div id="bottom-input" class="hidden p-4">
+            <form id="chat-form-bottom" class="max-w-2xl mx-auto">
+                <div class="bg-neutral-800 rounded-2xl px-4 py-3 border border-neutral-700">
+                    <textarea name="message" id="message-input-bottom" rows="1" placeholder="Ask anything"
+                        class="w-full bg-transparent text-white placeholder-gray-500 focus:outline-none resize-none text-base"
+                        required></textarea>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="flex items-center gap-3">
+                            <!-- Settings Button -->
+                            <button type="button" class="settings-btn-trigger text-gray-400 hover:text-white transition-colors" title="Settings">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                            </button>
+                            <!-- New Chat Button -->
+                            <button type="button" class="new-chat-btn text-gray-400 hover:text-white transition-colors" title="New Chat">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <button type="submit" id="send-btn-bottom" class="bg-white text-black font-medium py-2 px-4 rounded-full hover:bg-gray-200 transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Store provider models data
+    const providerModels = {{ provider_models | tojson | safe }};
+    const defaultModels = {{ default_models | tojson | safe }};
+
+    // Session ID
+    let sessionId = localStorage.getItem('sessionId') || '';
+
+    // Financial Mode state (declared early for use in handlers)
+    let financialModeEnabled = localStorage.getItem('financialModeEnabled') === 'true';
+
+    // Financial analysis prompt template
+    const FINANCIAL_PROMPT_TEMPLATE = `You are a Senior Portfolio Manager. Analyze these stocks: [stocks]
+
+RULES:
+- Use REAL financial data (actual numbers like $178.50, 44.1%, $2.78T)
+- Never use placeholder X's or template brackets
+- Format with bullet points (•) and **bold** all numbers
+- If data unavailable, write "N/A"
+
+For EACH stock, provide:
+
+STOCK 1: TICKER - Company Name
+
+📊 KEY METRICS
+• Price: **$XXX**
+• 52-Week Range: **$XX - $XXX**
+• Market Cap: **$XXB**
+• Enterprise Value: **$XXB**
+
+📈 GROWTH
+• Revenue Growth (TTM): **XX%**
+• Revenue 3Y CAGR: **XX%**
+• EPS Growth (TTM): **XX%**
+
+💰 PROFITABILITY
+• Gross Margin: **XX%**
+• Operating Margin: **XX%**
+• Net Margin: **XX%**
+• ROIC: **XX%**
+• ROE: **XX%**
+
+💵 CASH FLOW
+• FCF (TTM): **$XXB**
+• FCF Margin: **XX%**
+• FCF Yield: **XX%**
+
+🏦 BALANCE SHEET
+• Net Debt/EBITDA: **X.Xx**
+• Interest Coverage: **XXx**
+• Debt-to-Equity: **X.XX**
+
+📉 VALUATION
+• P/E: **XX.X**
+• Forward P/E: **XX.X**
+• EV/EBITDA: **XX.X**
+• P/FCF: **XX.X**
+• PEG: **X.XX**
+
+🎯 PRICE TARGETS
+• 12-Month Target: **$XXX** (XX% upside/downside)
+
+⚡ VERDICT
+• Rating: **Buy/Hold/Sell**
+• Confidence: **High/Medium/Low**
+• Score: **X/10**
+
+🏢 BUSINESS OVERVIEW
+• [1-2 sentence description]
+• Moat: [competitive advantage]
+
+⚠️ KEY RISK
+• [Single biggest risk]
+
+PORTFOLIO SUMMARY
+• TICKER: Rating - One sentence reason
+[for each stock]
+
+Best opportunity: TICKER because [reason]`;
+
+    // Load saved API keys from localStorage
+    const apiKeys = JSON.parse(localStorage.getItem('apiKeys') || '{}');
+
+    // Sidebar visibility (defined early for use in form handlers)
+    const sidebar = document.getElementById('sidebar');
+    let sidebarVisible = localStorage.getItem('sidebarVisible') === 'true';
+
+    function updateSidebarVisibility() {
+        if (sidebarVisible) {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+        } else {
+            sidebar.classList.remove('translate-x-0');
+            sidebar.classList.add('-translate-x-full');
+        }
+    }
+
+    function showSidebar() {
+        sidebarVisible = true;
+        localStorage.setItem('sidebarVisible', 'true');
+        updateSidebarVisibility();
+    }
+
+    function hideSidebar() {
+        sidebarVisible = false;
+        localStorage.setItem('sidebarVisible', 'false');
+        updateSidebarVisibility();
+    }
+
+    // DOM elements
+    const chatMessages = document.getElementById('chat-messages');
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const bottomInput = document.getElementById('bottom-input');
+    const messageInput = document.getElementById('message-input');
+    const messageInputBottom = document.getElementById('message-input-bottom');
+    const providerRows = document.querySelectorAll('.provider-row');
+
+    // Function to switch from welcome screen to chat view
+    function switchToChatView() {
+        welcomeScreen.classList.add('hidden');
+        chatMessages.classList.remove('hidden');
+        bottomInput.classList.remove('hidden');
+        messageInputBottom.focus();
+    }
+
+    // Function to switch back to welcome screen
+    function switchToWelcomeView() {
+        welcomeScreen.classList.remove('hidden');
+        chatMessages.classList.add('hidden');
+        bottomInput.classList.add('hidden');
+        // Recreate the inner container
+        chatMessages.innerHTML = '<div class="max-w-3xl mx-auto px-4 space-y-6"></div>';
+    }
+
+    // API key inputs
+    const apiKeyInputs = document.querySelectorAll('.api-key-input');
+
+    // Update connection status indicators
+    function updateConnectionStatus() {
+        ['openai', 'anthropic', 'google'].forEach(provider => {
+            const connectionEl = document.getElementById(`${provider}-connection`);
+            const modelStatusEl = document.getElementById(`${provider}-model-status`);
+            const connectionLabel = document.getElementById(`${provider}-connection-label`);
+
+            if (apiKeys[provider]) {
+                connectionEl.classList.remove('bg-red-500');
+                connectionEl.classList.add('bg-green-500');
+                if (modelStatusEl) {
+                    modelStatusEl.classList.remove('bg-gray-600');
+                    modelStatusEl.classList.add('bg-green-500');
+                }
+                // Make label clickable
+                if (connectionLabel) {
+                    connectionLabel.classList.add('cursor-pointer', 'hover:text-red-400');
+                }
+            } else {
+                connectionEl.classList.remove('bg-green-500');
+                connectionEl.classList.add('bg-red-500');
+                if (modelStatusEl) {
+                    modelStatusEl.classList.remove('bg-green-500');
+                    modelStatusEl.classList.add('bg-gray-600');
+                }
+                // Remove clickable styling
+                if (connectionLabel) {
+                    connectionLabel.classList.remove('cursor-pointer', 'hover:text-red-400');
+                }
+            }
+        });
+    }
+
+    // Handle clicking on connection labels to disconnect
+    document.querySelectorAll('.connection-label').forEach(label => {
+        label.addEventListener('click', function() {
+            const provider = this.dataset.provider;
+
+            // Only act if there's a valid key
+            if (!apiKeys[provider]) return;
+
+            // Delete the API key
+            delete apiKeys[provider];
+            localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+
+            // Clear the input field
+            const input = document.getElementById(`${provider}-key`);
+            if (input) {
+                input.value = '';
+                input.placeholder = 'Hit Enter to Send';
+            }
+
+            // Reset the API Keys section label color
+            const apiKeyLabel = input.parentElement.querySelector('label');
+            if (apiKeyLabel) {
+                apiKeyLabel.classList.remove('text-green-400');
+                apiKeyLabel.classList.add('text-gray-300');
+            }
+
+            // Reset status indicator in API Keys section
+            const statusEl = document.getElementById(`${provider}-status`);
+            if (statusEl) {
+                statusEl.classList.remove('bg-green-500');
+                statusEl.classList.add('bg-gray-600');
+            }
+
+            // Update all status indicators
+            updateConnectionStatus();
+            updateProviderHighlight();
+        });
+    });
+
+    // Get all active providers (those with valid API keys)
+    function getActiveProviders() {
+        const active = [];
+        ['openai', 'anthropic', 'google'].forEach(provider => {
+            if (apiKeys[provider]) {
+                active.push({
+                    provider: provider,
+                    model: document.getElementById(`${provider}-model`).value,
+                    apiKey: apiKeys[provider]
+                });
+            }
+        });
+        return active;
+    }
+
+    // Initialize API key inputs and status indicators
+    apiKeyInputs.forEach(input => {
+        const provider = input.dataset.provider;
+        const statusEl = document.getElementById(`${provider}-status`);
+
+        // Load saved key
+        if (apiKeys[provider]) {
+            input.value = apiKeys[provider];
+            statusEl.classList.remove('bg-gray-600');
+            statusEl.classList.add('bg-green-500');
+            // Set label to green for saved keys
+            const labelEl = input.parentElement.querySelector('label');
+            labelEl.classList.remove('text-gray-300');
+            labelEl.classList.add('text-green-400');
+        }
+
+        // Save key on change and update status
+        input.addEventListener('input', function() {
+            const labelEl = this.parentElement.querySelector('label');
+
+            if (this.value) {
+                apiKeys[provider] = this.value;
+            } else {
+                // Key was deleted - reset label color to original
+                delete apiKeys[provider];
+                labelEl.classList.remove('text-green-400');
+                labelEl.classList.add('text-gray-300');
+                statusEl.classList.remove('bg-green-500');
+                statusEl.classList.add('bg-gray-600');
+            }
+            localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+
+            // Update connection status and provider highlighting
+            updateConnectionStatus();
+            updateProviderHighlight();
+        });
+
+        // Handle Enter key to validate and save
+        input.addEventListener('keydown', async function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const key = this.value.trim();
+                const labelEl = this.parentElement.querySelector('label');
+
+                if (!key) {
+                    this.placeholder = 'Hit Enter to Send';
+                    labelEl.classList.remove('text-green-400');
+                    labelEl.classList.add('text-gray-300');
+                    delete apiKeys[provider];
+                    localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+                    updateConnectionStatus();
+                    this.blur();
+                    return;
+                }
+
+                // Show validating state
+                this.placeholder = 'Validating...';
+                this.disabled = true;
+
+                try {
+                    const formData = new FormData();
+                    formData.append('provider', provider);
+                    formData.append('api_key', key);
+
+                    const response = await fetch('/api/validate-key', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+
+                    if (result.valid) {
+                        // Valid key - green label, save key
+                        labelEl.classList.remove('text-gray-300');
+                        labelEl.classList.add('text-green-400');
+                        this.placeholder = 'Hit Enter to Send';
+                        apiKeys[provider] = key;
+                        localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+                        statusEl.classList.remove('bg-gray-600');
+                        statusEl.classList.add('bg-green-500');
+                    } else {
+                        // Invalid key - show error, reset label
+                        labelEl.classList.remove('text-green-400');
+                        labelEl.classList.add('text-gray-300');
+                        this.placeholder = 'Invalid Key';
+                        this.value = '';
+                        delete apiKeys[provider];
+                        localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+                        statusEl.classList.remove('bg-green-500');
+                        statusEl.classList.add('bg-gray-600');
+                    }
+                } catch (err) {
+                    // Network error - reset label
+                    labelEl.classList.remove('text-green-400');
+                    labelEl.classList.add('text-gray-300');
+                    this.placeholder = 'Validation Failed';
+                    this.value = '';
+                }
+
+                this.disabled = false;
+                updateConnectionStatus();
+                updateProviderHighlight();
+                this.blur();
+            }
+        });
+    });
+
+    // Initialize connection status and highlighting
+    updateConnectionStatus();
+    updateProviderHighlight();
+
+    // Load saved model selections from localStorage
+    const savedModels = JSON.parse(localStorage.getItem('selectedModels') || '{}');
+    ['openai', 'anthropic', 'google'].forEach(provider => {
+        const selectEl = document.getElementById(`${provider}-model`);
+        if (selectEl && savedModels[provider]) {
+            // Check if the saved model is still available
+            const options = Array.from(selectEl.options).map(o => o.value);
+            if (options.includes(savedModels[provider])) {
+                selectEl.value = savedModels[provider];
+            }
+        }
+    });
+
+    // Save model selection when changed
+    document.querySelectorAll('.model-select').forEach(select => {
+        select.addEventListener('change', function() {
+            const provider = this.dataset.provider;
+            const savedModels = JSON.parse(localStorage.getItem('selectedModels') || '{}');
+            savedModels[provider] = this.value;
+            localStorage.setItem('selectedModels', JSON.stringify(savedModels));
+        });
+    });
+
+    // Eye toggle for showing/hiding API keys
+    document.querySelectorAll('.eye-toggle').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.dataset.target;
+            const input = document.getElementById(targetId);
+            const eyeClosed = this.querySelector('.eye-closed');
+            const eyeOpen = this.querySelector('.eye-open');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeClosed.classList.add('hidden');
+                eyeOpen.classList.remove('hidden');
+            } else {
+                input.type = 'password';
+                eyeClosed.classList.remove('hidden');
+                eyeOpen.classList.add('hidden');
+            }
+        });
+    });
+
+    // Highlight active provider rows (those with API keys)
+    function updateProviderHighlight() {
+        providerRows.forEach(row => {
+            const provider = row.dataset.provider;
+            if (apiKeys[provider]) {
+                row.classList.add('bg-gray-700/50', 'border', 'border-green-500/50');
+            } else {
+                row.classList.remove('bg-gray-700/50', 'border', 'border-green-500/50');
+            }
+        });
+    }
+
+    // Form submission handler
+    const chatForm = document.getElementById('chat-form');
+    const chatFormBottom = document.getElementById('chat-form-bottom');
+    const sendBtn = document.getElementById('send-btn');
+    const sendBtnBottom = document.getElementById('send-btn-bottom');
+    const processingIndicator = document.getElementById('processing-indicator');
+
+    // Provider icons (colorful)
+    const providerIcons = {
+        openai: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+            <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.8956zm16.0993 3.8558L12.6 8.3829l2.02-1.1638a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" fill="#10a37f"/>
+        </svg>`,
+        anthropic: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+            <path d="M17.304 3.541h-3.672l6.696 16.918h3.672L17.304 3.541zm-10.608 0L0 20.459h3.744l1.368-3.6h6.624l1.368 3.6H16.8L10.104 3.541H6.696zm.456 10.8l2.352-6.192 2.352 6.192H7.152z" fill="#d4a27f"/>
+        </svg>`,
+        google: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>`
+    };
+
+    // Create a placeholder frame for an LLM with spinner
+    function createPlaceholderFrame(provider, model) {
+        const providerColor = provider === 'openai' ? 'text-green-400' : provider === 'anthropic' ? 'text-orange-400' : 'text-blue-400';
+        return `
+            <div class="bg-neutral-800 border border-neutral-700 rounded-lg overflow-hidden llm-response-frame" data-provider="${provider}">
+                <div class="response-header flex items-center justify-between px-4 py-2 border-b border-neutral-700 bg-neutral-800 cursor-pointer">
+                    <div class="flex items-center gap-2">
+                        ${providerIcons[provider]}
+                        <span class="text-xs text-neutral-400">${model}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="loading-spinner">
+                            <svg class="w-4 h-4 animate-spin text-neutral-400" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                        <div class="response-toggle-icons hidden flex items-center gap-1">
+                            <button type="button" class="response-arrow-toggle ${providerColor} hover:text-white transition-colors">
+                                <svg class="w-4 h-4 arrow-down" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                                <svg class="w-4 h-4 arrow-up hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                </svg>
+                            </button>
+                            <button type="button" class="response-eye-toggle ${providerColor} hover:text-white transition-colors">
+                                <svg class="w-4 h-4 eye-closed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                                </svg>
+                                <svg class="w-4 h-4 eye-open hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="response-content px-4 py-3 hidden">
+                    <p class="text-gray-100 whitespace-pre-wrap text-sm response-text"></p>
+                </div>
+            </div>
+        `;
+    }
+
+    // Uber Answer icon
+    const uberIcon = `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="url(#uberGradient)" stroke="#fbbf24" stroke-width="1"/>
+        <defs>
+            <linearGradient id="uberGradient" x1="2" y1="2" x2="22" y2="22">
+                <stop offset="0%" stop-color="#fbbf24"/>
+                <stop offset="50%" stop-color="#f97316"/>
+                <stop offset="100%" stop-color="#ef4444"/>
+            </linearGradient>
+        </defs>
+    </svg>`;
+
+    // Create Uber Answer placeholder with spinner
+    function createUberPlaceholder() {
+        return `
+            <div class="mt-4 uber-answer-frame">
+                <div class="uber-loading-spinner flex items-center gap-2 px-4 py-2">
+                    <svg class="w-4 h-4 animate-spin text-amber-400" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="uber-status text-xs text-neutral-500">Aggregating responses...</span>
+                </div>
+                <div class="uber-response-content px-4 py-4 hidden">
+                    <div class="text-gray-100 text-sm uber-response"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Common submission handler for both forms
+    async function handleChatSubmit(inputElement, submitBtn) {
+        const userInput = inputElement.value.trim();
+        if (!userInput) return;
+
+        // If Financial Mode is enabled, wrap user input with the financial prompt
+        const message = financialModeEnabled
+            ? FINANCIAL_PROMPT_TEMPLATE.replace('[stocks]', userInput)
+            : userInput;
+
+        const activeProviders = getActiveProviders();
+
+        if (activeProviders.length === 0) {
+            showError('Please enter at least one API key in the sidebar to start chatting.');
+            showSidebar();
+            document.getElementById('openai-key').focus();
+            return;
+        }
+
+        // Show processing state
+        submitBtn.disabled = true;
+        if (sendBtnBottom) sendBtnBottom.disabled = true;
+
+        // Switch to chat view if on welcome screen
+        if (!welcomeScreen.classList.contains('hidden')) {
+            switchToChatView();
+        }
+
+        // Show user message immediately in chat (show original input, not the full prompt)
+        const displayMessage = financialModeEnabled ? `Analyzing: ${userInput}` : userInput;
+        const userMessageHtml = `
+            <div class="flex justify-end">
+                <div class="bg-neutral-700 rounded-2xl px-4 py-2 max-w-md">
+                    <p class="text-white whitespace-pre-wrap text-sm">${escapeHtml(displayMessage)}</p>
+                </div>
+            </div>
+        `;
+        // Insert into the inner container
+        const chatContainer = chatMessages.querySelector('.max-w-3xl') || chatMessages;
+        chatContainer.insertAdjacentHTML('beforeend', userMessageHtml);
+
+        // Clear input immediately
+        inputElement.value = '';
+
+        // Create placeholder frames for each active provider immediately
+        const responsesContainer = document.createElement('div');
+        responsesContainer.className = 'space-y-3 llm-responses-container';
+        activeProviders.forEach(p => {
+            responsesContainer.insertAdjacentHTML('beforeend', createPlaceholderFrame(p.provider, p.model));
+        });
+        chatContainer.appendChild(responsesContainer);
+
+        // Scroll to show placeholders
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Clear session for financial mode to avoid token accumulation
+        if (financialModeEnabled) {
+            sessionId = '';  // Force new session for each financial analysis
+        }
+
+        // Build form data
+        const formData = new FormData();
+        formData.append('message', message);
+        formData.append('providers', activeProviders.map(p => p.provider).join(','));
+        formData.append('models', activeProviders.map(p => p.model).join(','));
+        formData.append('api_keys', activeProviders.map(p => p.apiKey).join(','));
+
+        try {
+            const response = await fetch('/api/chat-multi', {
+                method: 'POST',
+                headers: {
+                    'X-Session-ID': sessionId
+                },
+                body: formData
+            });
+
+            // Get session ID from response
+            const responseSessionId = response.headers.get('X-Session-ID');
+            if (responseSessionId) {
+                sessionId = responseSessionId;
+                localStorage.setItem('sessionId', sessionId);
+            }
+
+            if (response.ok) {
+                const html = await response.text();
+
+                // Parse the response to extract individual LLM responses
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const responseBlocks = tempDiv.querySelectorAll('.llm-response-frame');
+
+                // Track responses for aggregator
+                const responsesForAggregator = [];
+                let fastestFound = false;
+
+                // Update each placeholder frame with the actual response
+                responseBlocks.forEach((block) => {
+                    const providerBadge = block.querySelector('.text-xs.font-bold');
+                    const providerName = providerBadge?.textContent.trim().toLowerCase();
+                    const placeholderFrame = responsesContainer.querySelector(`[data-provider="${providerName}"]`);
+
+                    if (placeholderFrame) {
+                        // Get response text
+                        const responseText = block.querySelector('.text-gray-100')?.textContent || '';
+
+                        // Store for aggregator
+                        const modelText = placeholderFrame.querySelector('.text-neutral-400')?.textContent || '';
+                        responsesForAggregator.push({
+                            provider: providerName,
+                            model: modelText,
+                            response: responseText
+                        });
+
+                        // Update the placeholder frame
+                        const spinner = placeholderFrame.querySelector('.loading-spinner');
+                        const toggleIcons = placeholderFrame.querySelector('.response-toggle-icons');
+                        const responseTextEl = placeholderFrame.querySelector('.response-text');
+
+                        // Hide spinner, show toggle icons
+                        if (spinner) spinner.classList.add('hidden');
+                        if (toggleIcons) toggleIcons.classList.remove('hidden');
+
+                        // Store the response text for reveal
+                        if (responseTextEl) {
+                            responseTextEl.textContent = responseText;
+                        }
+
+                        // Store response in data attribute for later formatting
+                        placeholderFrame.dataset.response = responseText;
+                    }
+                });
+
+                // Mark any providers that didn't respond as failed
+                const allFrames = responsesContainer.querySelectorAll('.llm-response-frame');
+                allFrames.forEach(frame => {
+                    const spinner = frame.querySelector('.loading-spinner');
+                    if (spinner && !spinner.classList.contains('hidden')) {
+                        // This provider didn't respond - show error state
+                        spinner.classList.add('hidden');
+                        const toggleIcons = frame.querySelector('.response-toggle-icons');
+                        const responseTextEl = frame.querySelector('.response-text');
+                        const content = frame.querySelector('.response-content');
+
+                        // Show error message
+                        if (responseTextEl) {
+                            responseTextEl.textContent = 'Failed to get response from this provider.';
+                            responseTextEl.classList.add('text-red-400');
+                        }
+                        if (content) content.classList.remove('hidden');
+                        frame.classList.add('opacity-50');
+                    }
+                });
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // If aggregator is enabled and we have at least 2 responses, show placeholder and call it
+                if (aggregatorEnabled.checked && activeProviders.length >= 2) {
+                    // Add Uber Answer placeholder
+                    chatContainer.insertAdjacentHTML('beforeend', createUberPlaceholder());
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                    // Call aggregator
+                    const aggregatorResult = await callAggregator(message, responsesForAggregator);
+
+                    // Find the uber answer frame and update it
+                    const uberFrame = chatContainer.querySelector('.uber-answer-frame');
+                    if (uberFrame) {
+                        const uberSpinner = uberFrame.querySelector('.uber-loading-spinner');
+                        const uberContent = uberFrame.querySelector('.uber-response-content');
+                        const uberResponse = uberFrame.querySelector('.uber-response');
+
+                        if (aggregatorResult && aggregatorResult.success) {
+                            // Hide spinner
+                            if (uberSpinner) uberSpinner.classList.add('hidden');
+
+                            // Format and show content immediately
+                            if (uberResponse) {
+                                uberResponse.innerHTML = formatMarkdown(aggregatorResult.response);
+                            }
+                            if (uberContent) uberContent.classList.remove('hidden');
+
+                            // Scroll to top of Uber Answer frame, not bottom of page
+                            uberFrame.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        } else {
+                            // Error - show message
+                            const statusText = uberFrame.querySelector('.uber-status');
+                            if (uberSpinner) {
+                                uberSpinner.querySelector('svg')?.classList.add('hidden');
+                            }
+                            if (statusText) statusText.textContent = 'Failed: ' + (aggregatorResult?.error || 'Unknown error');
+                        }
+                    }
+                }
+            } else {
+                const errorText = await response.text();
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    if (Array.isArray(errorJson.detail)) {
+                        const messages = errorJson.detail.map(err => err.msg || JSON.stringify(err));
+                        showError(messages.join(', '));
+                    } else {
+                        showError(errorJson.detail || 'An error occurred');
+                    }
+                } catch {
+                    showError('An error occurred while processing your request');
+                }
+            }
+        } catch (err) {
+            showError('Network error: ' + err.message);
+        } finally {
+            // Re-enable buttons
+            sendBtn.disabled = false;
+            if (sendBtnBottom) sendBtnBottom.disabled = false;
+        }
+    }
+
+    // Attach submit handlers to both forms
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        await handleChatSubmit(messageInput, sendBtn);
+    });
+
+    chatFormBottom.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        await handleChatSubmit(messageInputBottom, sendBtnBottom);
+    });
+
+    // Show error message
+    function showError(message) {
+        const errorContainer = document.getElementById('error-container');
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.textContent = message;
+        errorContainer.classList.remove('hidden');
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Convert markdown to formatted HTML
+    function formatMarkdown(text) {
+        let html = escapeHtml(text);
+
+        // Remove "## Uber Answer" header and preamble (Data as of, Sources lines)
+        html = html.replace(/^##\s*Uber Answer\s*/i, '');
+        html = html.replace(/^Data as of:.*$/gm, '');
+        html = html.replace(/^Sources:.*$/gm, '');
+
+        // Remove all separator lines (═══ or ---) - they'll be replaced by styled containers
+        html = html.replace(/[═]{3,}/g, '');
+        html = html.replace(/[-]{5,}/g, '');
+
+        // Stock logos for major companies
+        const stockLogos = {
+            'GOOGL': 'https://logo.clearbit.com/google.com',
+            'GOOG': 'https://logo.clearbit.com/google.com',
+            'AAPL': 'https://logo.clearbit.com/apple.com',
+            'MSFT': 'https://logo.clearbit.com/microsoft.com',
+            'AMZN': 'https://logo.clearbit.com/amazon.com',
+            'META': 'https://logo.clearbit.com/meta.com',
+            'NVDA': 'https://logo.clearbit.com/nvidia.com',
+            'TSLA': 'https://logo.clearbit.com/tesla.com',
+            'NFLX': 'https://logo.clearbit.com/netflix.com',
+            'COIN': 'https://logo.clearbit.com/coinbase.com',
+            'AMD': 'https://logo.clearbit.com/amd.com',
+            'INTC': 'https://logo.clearbit.com/intel.com',
+            'CRM': 'https://logo.clearbit.com/salesforce.com',
+            'ORCL': 'https://logo.clearbit.com/oracle.com',
+            'ADBE': 'https://logo.clearbit.com/adobe.com',
+            'PYPL': 'https://logo.clearbit.com/paypal.com',
+            'SQ': 'https://logo.clearbit.com/squareup.com',
+            'SHOP': 'https://logo.clearbit.com/shopify.com',
+            'SPOT': 'https://logo.clearbit.com/spotify.com',
+            'UBER': 'https://logo.clearbit.com/uber.com',
+            'LYFT': 'https://logo.clearbit.com/lyft.com',
+            'ABNB': 'https://logo.clearbit.com/airbnb.com',
+            'ZM': 'https://logo.clearbit.com/zoom.us',
+            'SNAP': 'https://logo.clearbit.com/snap.com',
+            'PINS': 'https://logo.clearbit.com/pinterest.com',
+            'TWTR': 'https://logo.clearbit.com/twitter.com',
+            'DIS': 'https://logo.clearbit.com/disney.com',
+            'V': 'https://logo.clearbit.com/visa.com',
+            'MA': 'https://logo.clearbit.com/mastercard.com',
+            'JPM': 'https://logo.clearbit.com/jpmorganchase.com',
+            'BAC': 'https://logo.clearbit.com/bankofamerica.com',
+            'WMT': 'https://logo.clearbit.com/walmart.com',
+            'TGT': 'https://logo.clearbit.com/target.com',
+            'COST': 'https://logo.clearbit.com/costco.com',
+            'HD': 'https://logo.clearbit.com/homedepot.com',
+            'NKE': 'https://logo.clearbit.com/nike.com',
+            'SBUX': 'https://logo.clearbit.com/starbucks.com',
+            'MCD': 'https://logo.clearbit.com/mcdonalds.com',
+            'KO': 'https://logo.clearbit.com/coca-cola.com',
+            'PEP': 'https://logo.clearbit.com/pepsico.com',
+            'JNJ': 'https://logo.clearbit.com/jnj.com',
+            'PFE': 'https://logo.clearbit.com/pfizer.com',
+            'MRNA': 'https://logo.clearbit.com/modernatx.com',
+            'MU': 'https://logo.clearbit.com/micron.com',
+            'AVGO': 'https://logo.clearbit.com/broadcom.com',
+            'QCOM': 'https://logo.clearbit.com/qualcomm.com',
+            'IBM': 'https://logo.clearbit.com/ibm.com',
+            'CSCO': 'https://logo.clearbit.com/cisco.com',
+            'NOW': 'https://logo.clearbit.com/servicenow.com',
+            'PLTR': 'https://logo.clearbit.com/palantir.com',
+            'SNOW': 'https://logo.clearbit.com/snowflake.com',
+            'NET': 'https://logo.clearbit.com/cloudflare.com',
+            'DDOG': 'https://logo.clearbit.com/datadoghq.com',
+            'CRWD': 'https://logo.clearbit.com/crowdstrike.com',
+            'ZS': 'https://logo.clearbit.com/zscaler.com',
+            'PANW': 'https://logo.clearbit.com/paloaltonetworks.com',
+            'BA': 'https://logo.clearbit.com/boeing.com',
+            'CAT': 'https://logo.clearbit.com/caterpillar.com',
+            'XOM': 'https://logo.clearbit.com/exxonmobil.com',
+            'CVX': 'https://logo.clearbit.com/chevron.com',
+        };
+
+        // First pass: Extract ratings and scores for each stock
+        const stockRatings = {};
+        const stockScores = {};
+
+        // Split by STOCK headers to process each stock section separately
+        const stockSections = html.split(/(?=STOCK\s+\d+)/gi);
+        stockSections.forEach(section => {
+            const stockNumMatch = section.match(/STOCK\s+(\d+)/i);
+            if (!stockNumMatch) return;
+            const stockNum = stockNumMatch[1];
+
+            // Find rating - multiple patterns for different LLM formats
+            const ratingPatterns = [
+                /(?:Rating|Recommendation|Verdict)[:\s]*\*{0,2}(Strong Buy|Buy|Hold|Sell|Strong Sell)\*{0,2}/i,
+                /\*{0,2}(Strong Buy|Buy|Hold|Sell|Strong Sell)\*{0,2}[:\s]*(?:rating|recommendation)/i,
+                /(?:Overall|Final)[:\s]*\*{0,2}(Strong Buy|Buy|Hold|Sell|Strong Sell)\*{0,2}/i
+            ];
+            for (const pattern of ratingPatterns) {
+                const match = section.match(pattern);
+                if (match) {
+                    stockRatings[stockNum] = match[1].trim();
+                    break;
+                }
+            }
+
+            // Find score - multiple patterns
+            const scorePatterns = [
+                /(?:Score|Rating)[:\s]*\*{0,2}(\d+)\s*\/\s*10\*{0,2}/i,
+                /(\d+)\s*\/\s*10\s*(?:score|rating|overall)/i,
+                /\*{0,2}(\d+)\/10\*{0,2}/i
+            ];
+            for (const pattern of scorePatterns) {
+                const match = section.match(pattern);
+                if (match) {
+                    stockScores[stockNum] = match[1];
+                    break;
+                }
+            }
+        });
+
+        // Mark STOCK headers: "STOCK N: TICKER - NAME" or "STOCK N: TICKER"
+        // Note: Company name can include letters, spaces, commas, periods, ampersands
+        html = html.replace(/STOCK\s+(\d+):\s*([A-Z0-9]+)(?:\s*[-–—]\s*([A-Za-z0-9 ,.&']+))?/gi, function(match, num, ticker, name) {
+            const cleanName = name ? name.trim() : '';
+            const rating = stockRatings[num] || '';
+            const score = stockScores[num] || '';
+            const logoUrl = stockLogos[ticker.toUpperCase()];
+
+            // Create logo element if available
+            let logoHtml = '';
+            if (logoUrl) {
+                logoHtml = `<img src="${logoUrl}" alt="${ticker}" class="w-10 h-10 rounded-lg bg-white p-1" onerror="this.style.display='none'">`;
+            }
+
+            // Create prominent rating badge with score
+            let ratingBadge = '';
+            if (rating) {
+                const ratingLower = rating.toLowerCase();
+                let badgeColor, glowColor;
+                if (ratingLower.includes('strong buy')) { badgeColor = 'bg-green-500 text-white'; glowColor = 'shadow-green-500/50'; }
+                else if (ratingLower.includes('buy')) { badgeColor = 'bg-green-500 text-white'; glowColor = 'shadow-green-500/50'; }
+                else if (ratingLower.includes('hold')) { badgeColor = 'bg-amber-500 text-white'; glowColor = 'shadow-amber-500/50'; }
+                else if (ratingLower.includes('strong sell')) { badgeColor = 'bg-red-500 text-white'; glowColor = 'shadow-red-500/50'; }
+                else { badgeColor = 'bg-red-500 text-white'; glowColor = 'shadow-red-500/50'; }
+
+                const scoreDisplay = score ? `<span class="ml-2 text-xl font-black">${score}/10</span>` : '';
+                ratingBadge = `<span class="px-4 py-2 rounded-lg text-lg font-black ${badgeColor} shadow-lg ${glowColor} flex items-center">${rating.toUpperCase()}${scoreDisplay}</span>`;
+            } else if (score) {
+                // If we have score but no rating
+                ratingBadge = `<span class="px-4 py-2 rounded-lg text-xl font-black bg-neutral-600 text-white">${score}/10</span>`;
+            }
+
+            return `%%SECTION_END%%<div class="stock-section bg-neutral-800/50 border border-neutral-700 rounded-xl p-5 my-4"><div class="stock-header flex items-center flex-wrap gap-4 mb-4 pb-3 border-b border-neutral-600">${logoHtml}<span class="text-2xl font-bold text-white">${ticker}${cleanName ? ' - ' + cleanName.toUpperCase() : ''}</span>${ratingBadge}</div><div class="stock-content">`;
+        });
+
+        // Remove Rating and Score lines from VERDICT section since rating is now in header
+        html = html.replace(/•\s*Rating:\s*\*{0,2}[^*\n]+\*{0,2}/gi, '');
+        html = html.replace(/•\s*Score:\s*\*{0,2}[^*\n]+\*{0,2}/gi, '');
+
+        // Mark PORTFOLIO SUMMARY
+        html = html.replace(/PORTFOLIO SUMMARY/gi,
+            '%%SECTION_END%%<div class="stock-section bg-gradient-to-r from-amber-900/30 to-neutral-800/50 border border-amber-500/30 rounded-xl p-4 my-4"><div class="stock-header text-lg font-bold text-amber-400 mb-3 pb-2 border-b border-amber-500/30">🏆 PORTFOLIO SUMMARY</div><div class="stock-content">');
+
+        // Convert section end markers to closing divs
+        html = html.replace(/%%SECTION_END%%/g, '</div></div>');
+
+        // Clean up the leading </div></div> that appears before first section
+        html = html.replace(/^(\s|\n)*<\/div><\/div>/, '');
+
+        // Convert ─── lines to subtle dividers (but not too many dashes)
+        html = html.replace(/[─]{3,}/g, '<div class="border-b border-neutral-700/50 my-2"></div>');
+
+        // Convert ## headers to styled section titles (no hashtags)
+        html = html.replace(/##\s*Response Ratings/gi,
+            '<div class="text-lg font-bold text-amber-400 mt-6 mb-3 pt-4 border-t border-neutral-600">📊 Response Ratings</div>');
+        html = html.replace(/##\s*Hallucination Check/gi,
+            '<div class="text-lg font-bold text-red-400 mt-6 mb-3 pt-4 border-t border-neutral-600">⚠️ Hallucination Check</div>');
+        html = html.replace(/##\s*([^\n<]+)/gi,
+            '<div class="text-lg font-bold text-neutral-200 mt-6 mb-3 pt-4 border-t border-neutral-600">$1</div>');
+
+        // Convert section headers with emojis (📊 KEY METRICS, etc.)
+        html = html.replace(/(📊|💰|💵|🏦|📉|🎯|⚡|🏢|⚠️|🔍|✅|⭐)\s*:?\s*([A-Z][A-Z\s:]+)/gi,
+            '<div class="section-header text-sm font-semibold text-neutral-300 mt-3 mb-1">$1 $2</div>');
+
+        // Convert **bold** text - make numbers stand out in amber
+        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="text-amber-300 font-semibold">$1</strong>');
+
+        // Convert bullet points with • character
+        html = html.replace(/•\s*([^\n]+)/g, '<div class="flex items-start gap-2 ml-2 my-1"><span class="text-amber-400">•</span><span>$1</span></div>');
+
+        // Format Response Ratings items with provider names and scores - add spacing
+        html = html.replace(/-\s*\[([A-Z]+)\s*\(([^)]+)\)\]:\s*\[(\d+)\/10\]\s*-\s*([^\n<]+)/gi, function(match, provider, model, score, reason) {
+            const scoreNum = parseInt(score);
+            const scoreColor = scoreNum >= 8 ? 'text-green-400' : scoreNum >= 5 ? 'text-amber-400' : 'text-red-400';
+            const bgColor = scoreNum >= 8 ? 'bg-green-500/20' : scoreNum >= 5 ? 'bg-amber-500/20' : 'bg-red-500/20';
+            return `<div class="my-3 p-3 rounded-lg ${bgColor} border border-neutral-700">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="font-semibold text-neutral-200">${provider}</span>
+                    <span class="font-bold ${scoreColor}">${score}/10</span>
+                </div>
+                <div class="text-xs text-neutral-500 mb-1">${model}</div>
+                <div class="text-sm text-neutral-300">${reason}</div>
+            </div>`;
+        });
+
+        // Format Portfolio Summary stock ratings with visual badges
+        html = html.replace(/•\s*([A-Z]+):\s*(Strong Buy|Buy|Hold|Sell|Strong Sell)\s*-\s*([^\n<]+)/gi, function(match, ticker, rating, reason) {
+            const ratingLower = rating.toLowerCase();
+            let ratingColor, ratingBg;
+            if (ratingLower.includes('strong buy')) { ratingColor = 'text-green-300'; ratingBg = 'bg-green-600'; }
+            else if (ratingLower.includes('buy')) { ratingColor = 'text-green-300'; ratingBg = 'bg-green-500/80'; }
+            else if (ratingLower.includes('hold')) { ratingColor = 'text-amber-300'; ratingBg = 'bg-amber-500/80'; }
+            else if (ratingLower.includes('strong sell')) { ratingColor = 'text-red-300'; ratingBg = 'bg-red-600'; }
+            else { ratingColor = 'text-red-300'; ratingBg = 'bg-red-500/80'; }
+            return `<div class="flex items-center gap-3 my-2 p-2 bg-neutral-800/50 rounded-lg">
+                <span class="font-bold text-white text-lg">${ticker}</span>
+                <span class="px-2 py-1 rounded text-xs font-bold ${ratingBg} ${ratingColor}">${rating.toUpperCase()}</span>
+                <span class="text-neutral-400 text-sm">${reason}</span>
+            </div>`;
+        });
+
+        // Style verdict/rating lines
+        html = html.replace(/Rating:\s*<strong[^>]*>([^<]+)<\/strong>/gi, 'Rating: <strong class="text-green-400 font-bold">$1</strong>');
+        html = html.replace(/Score:\s*<strong[^>]*>([^<]+)<\/strong>/gi, 'Score: <strong class="text-amber-300 font-bold text-lg">$1</strong>');
+
+        // Style "Best opportunity" line
+        html = html.replace(/Best opportunity:\s*([A-Z]+)\s*because\s*([^\n<]+)/gi,
+            '<div class="my-4 p-3 bg-gradient-to-r from-green-900/40 to-neutral-800/40 border border-green-500/30 rounded-lg"><span class="text-green-400 font-bold">🏆 Best Opportunity:</span> <span class="text-white font-bold">$1</span> <span class="text-neutral-300">— $2</span></div>');
+
+        // Format Hallucination Check items (dash items after that section)
+        html = html.replace(/-\s*([^:\n]+)'s\s*([^\n<]+)/gi, function(match, provider, issue) {
+            // Only format if it looks like a hallucination check item
+            if (issue.includes('incorrect') || issue.includes('outdated') || issue.includes('should')) {
+                return `<div class="my-2 p-2 bg-red-900/20 border-l-2 border-red-500 pl-3 rounded-r">
+                    <span class="text-red-400 font-medium">${provider}:</span>
+                    <span class="text-neutral-300 text-sm">${issue}</span>
+                </div>`;
+            }
+            return match;
+        });
+
+        // Convert line breaks
+        html = html.replace(/\n/g, '<br>');
+
+        // Clean up multiple <br> tags
+        html = html.replace(/(<br>\s*){3,}/g, '<br><br>');
+
+        // Clean up <br> right after opening stock-content div
+        html = html.replace(/<div class="stock-content">(\s*<br>)+/g, '<div class="stock-content">');
+
+        // Remove orphan periods (single period on its own line)
+        html = html.replace(/(<br>\s*)\.\s*(<br>)/g, '$1$2');
+        html = html.replace(/<div class="stock-content">\s*\.\s*(<br>)?/g, '<div class="stock-content">');
+
+        // Add final closing divs for any open sections
+        const openSections = (html.match(/<div class="stock-section/g) || []).length;
+        const closedSections = (html.match(/<\/div><\/div>/g) || []).length;
+        for (let i = closedSections; i < openSections; i++) {
+            html += '</div></div>';
+        }
+
+        return html;
+    }
+
+    // Format newly added LLM response elements
+    function formatNewResponses() {
+        document.querySelectorAll('.response-content p.text-gray-100:not([data-formatted])').forEach(el => {
+            const rawText = el.textContent;
+            el.innerHTML = formatMarkdown(rawText);
+            el.setAttribute('data-formatted', 'true');
+            el.classList.remove('whitespace-pre-wrap');
+        });
+    }
+
+    // Clear conversation / New Chat - attach to all new chat buttons
+    document.querySelectorAll('.new-chat-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            fetch('/api/clear', {
+                method: 'POST',
+                headers: {
+                    'X-Session-ID': sessionId
+                }
+            }).then(() => {
+                switchToWelcomeView();
+                messageInput.focus();
+            });
+        });
+    });
+
+    // Handle Enter key (Shift+Enter for new line) - for both inputs
+    messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            chatForm.dispatchEvent(new Event('submit', { bubbles: true }));
+        }
+    });
+
+    messageInputBottom.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            chatFormBottom.dispatchEvent(new Event('submit', { bubbles: true }));
+        }
+    });
+
+    // API Keys section toggle
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarContent = document.getElementById('sidebar-content');
+    const sidebarToggleIcon = document.getElementById('sidebar-toggle-icon');
+    let apiKeysExpanded = localStorage.getItem('apiKeysExpanded') === 'true';
+
+    function updateApiKeysVisibility() {
+        if (apiKeysExpanded) {
+            sidebarContent.style.display = 'block';
+            sidebarToggleIcon.style.transform = 'rotate(0deg)'; // chevron down
+        } else {
+            sidebarContent.style.display = 'none';
+            sidebarToggleIcon.style.transform = 'rotate(-90deg)'; // chevron right
+        }
+    }
+
+    sidebarToggle.addEventListener('click', function() {
+        apiKeysExpanded = !apiKeysExpanded;
+        localStorage.setItem('apiKeysExpanded', apiKeysExpanded);
+        updateApiKeysVisibility();
+    });
+
+    // Initialize API Keys visibility
+    updateApiKeysVisibility();
+
+    // LLM Model Selection toggle
+    const modelsToggle = document.getElementById('models-toggle');
+    const modelsContent = document.getElementById('models-content');
+    const modelsToggleIcon = document.getElementById('models-toggle-icon');
+    let modelsExpanded = localStorage.getItem('modelsExpanded') === 'true';
+
+    function updateModelsVisibility() {
+        if (modelsExpanded) {
+            modelsContent.style.display = 'block';
+            modelsToggleIcon.style.transform = 'rotate(0deg)'; // chevron down
+        } else {
+            modelsContent.style.display = 'none';
+            modelsToggleIcon.style.transform = 'rotate(-90deg)'; // chevron right
+        }
+    }
+
+    modelsToggle.addEventListener('click', function() {
+        modelsExpanded = !modelsExpanded;
+        localStorage.setItem('modelsExpanded', modelsExpanded);
+        updateModelsVisibility();
+    });
+
+    // Initialize Models visibility
+    updateModelsVisibility();
+
+    // Aggregator section toggle
+    const aggregatorToggle = document.getElementById('aggregator-toggle');
+    const aggregatorContent = document.getElementById('aggregator-content');
+    const aggregatorToggleIcon = document.getElementById('aggregator-toggle-icon');
+    const aggregatorEnabled = document.getElementById('aggregator-enabled');
+    const aggregatorProvider = document.getElementById('aggregator-provider');
+    const aggregatorModel = document.getElementById('aggregator-model');
+    let aggregatorExpanded = localStorage.getItem('aggregatorExpanded') === 'true';
+
+    function updateAggregatorVisibility() {
+        if (aggregatorExpanded) {
+            aggregatorContent.style.display = 'block';
+            aggregatorToggleIcon.style.transform = 'rotate(0deg)';
+        } else {
+            aggregatorContent.style.display = 'none';
+            aggregatorToggleIcon.style.transform = 'rotate(-90deg)';
+        }
+    }
+
+    aggregatorToggle.addEventListener('click', function() {
+        aggregatorExpanded = !aggregatorExpanded;
+        localStorage.setItem('aggregatorExpanded', aggregatorExpanded);
+        updateAggregatorVisibility();
+    });
+
+    // Initialize Aggregator visibility
+    updateAggregatorVisibility();
+
+    // Load saved aggregator settings
+    const savedAggregatorEnabled = localStorage.getItem('aggregatorEnabled') === 'true';
+    const savedAggregatorProvider = localStorage.getItem('aggregatorProvider') || 'anthropic';
+    const savedAggregatorModel = localStorage.getItem('aggregatorModel');
+
+    aggregatorEnabled.checked = savedAggregatorEnabled;
+    aggregatorProvider.value = savedAggregatorProvider;
+
+    // Update aggregator model dropdown based on provider
+    function updateAggregatorModels() {
+        const provider = aggregatorProvider.value;
+        const models = providerModels[provider] || [];
+        aggregatorModel.innerHTML = models.map(m => `<option value="${m}">${m}</option>`).join('');
+
+        // Restore saved model if it exists for this provider
+        if (savedAggregatorModel && models.includes(savedAggregatorModel)) {
+            aggregatorModel.value = savedAggregatorModel;
+        }
+    }
+
+    aggregatorProvider.addEventListener('change', function() {
+        localStorage.setItem('aggregatorProvider', this.value);
+        updateAggregatorModels();
+    });
+
+    aggregatorModel.addEventListener('change', function() {
+        localStorage.setItem('aggregatorModel', this.value);
+    });
+
+    aggregatorEnabled.addEventListener('change', function() {
+        localStorage.setItem('aggregatorEnabled', this.checked);
+    });
+
+    // Initialize aggregator models
+    updateAggregatorModels();
+
+    // Function to call the aggregator
+    async function callAggregator(userQuestion, responses) {
+        const provider = aggregatorProvider.value;
+        const model = aggregatorModel.value;
+        const apiKey = apiKeys[provider];
+
+        if (!apiKey) {
+            showError(`Please enter an API key for ${provider} to use the Uber Answer feature.`);
+            return null;
+        }
+
+        const formData = new FormData();
+        formData.append('user_question', userQuestion);
+        formData.append('responses_json', JSON.stringify(responses));
+        formData.append('aggregator_provider', provider);
+        formData.append('aggregator_model', model);
+        formData.append('aggregator_api_key', apiKey);
+
+        try {
+            const response = await fetch('/api/aggregate', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            return result;
+        } catch (err) {
+            console.error('Aggregator error:', err);
+            return null;
+        }
+    }
+
+    // Toggle LLM response frame visibility
+    function toggleLLMResponse(frame) {
+        if (!frame) return;
+
+        const content = frame.querySelector('.response-content');
+        const responseTextEl = frame.querySelector('.response-text');
+        const arrowToggle = frame.querySelector('.response-arrow-toggle');
+        const eyeToggle = frame.querySelector('.response-eye-toggle');
+        const arrowDown = arrowToggle?.querySelector('.arrow-down');
+        const arrowUp = arrowToggle?.querySelector('.arrow-up');
+        const eyeClosed = eyeToggle?.querySelector('.eye-closed');
+        const eyeOpen = eyeToggle?.querySelector('.eye-open');
+        const provider = frame.dataset.provider;
+        const colorClass = provider === 'openai' ? 'text-green-400' : provider === 'anthropic' ? 'text-orange-400' : 'text-blue-400';
+
+        if (content.classList.contains('hidden')) {
+            // First reveal - format markdown if not yet formatted
+            if (responseTextEl && frame.dataset.response && !responseTextEl.dataset.formatted) {
+                responseTextEl.innerHTML = formatMarkdown(frame.dataset.response);
+                responseTextEl.dataset.formatted = 'true';
+            }
+            content.classList.remove('hidden');
+            // Update icons
+            if (arrowDown) arrowDown.classList.add('hidden');
+            if (arrowUp) arrowUp.classList.remove('hidden');
+            if (eyeClosed) eyeClosed.classList.add('hidden');
+            if (eyeOpen) eyeOpen.classList.remove('hidden');
+            // Remove color (expanded state)
+            if (arrowToggle) { arrowToggle.classList.remove(colorClass); arrowToggle.classList.add('text-neutral-500'); }
+            if (eyeToggle) { eyeToggle.classList.remove(colorClass); eyeToggle.classList.add('text-neutral-500'); }
+            // Don't scroll - keep user's current position
+        } else {
+            content.classList.add('hidden');
+            // Update icons
+            if (arrowDown) arrowDown.classList.remove('hidden');
+            if (arrowUp) arrowUp.classList.add('hidden');
+            if (eyeClosed) eyeClosed.classList.remove('hidden');
+            if (eyeOpen) eyeOpen.classList.add('hidden');
+            // Restore color (collapsed state)
+            if (arrowToggle) { arrowToggle.classList.remove('text-neutral-500'); arrowToggle.classList.add(colorClass); }
+            if (eyeToggle) { eyeToggle.classList.remove('text-neutral-500'); eyeToggle.classList.add(colorClass); }
+        }
+    }
+
+    // Handle clicks on response frames (event delegation)
+    chatMessages.addEventListener('click', function(e) {
+        // Handle LLM response frame arrow or eye toggle
+        const responseArrowBtn = e.target.closest('.response-arrow-toggle');
+        const responseEyeBtn = e.target.closest('.response-eye-toggle');
+        if (responseArrowBtn || responseEyeBtn) {
+            const frame = (responseArrowBtn || responseEyeBtn).closest('.llm-response-frame');
+            toggleLLMResponse(frame);
+            return;
+        }
+    });
+
+    // Handle double-click on response headers
+    chatMessages.addEventListener('dblclick', function(e) {
+        // Double-click on LLM response header
+        const responseHeader = e.target.closest('.response-header');
+        if (responseHeader) {
+            const frame = responseHeader.closest('.llm-response-frame');
+            // Only toggle if icons are visible (response is ready)
+            const toggleIcons = frame?.querySelector('.response-toggle-icons');
+            if (toggleIcons && !toggleIcons.classList.contains('hidden')) {
+                toggleLLMResponse(frame);
+            }
+            return;
+        }
+    });
+
+    // Financial Mode toggle
+    const financialModeToggle = document.getElementById('financial-mode-toggle');
+    const financialModeKnob = document.getElementById('financial-mode-knob');
+
+    function updateFinancialModeUI() {
+        const placeholder = financialModeEnabled ? 'Enter Stocks to Analyze' : 'Ask anything';
+        messageInput.placeholder = placeholder;
+        messageInputBottom.placeholder = placeholder;
+
+        if (financialModeEnabled) {
+            financialModeToggle.classList.remove('bg-neutral-700');
+            financialModeToggle.classList.add('bg-green-500');
+            financialModeKnob.classList.remove('translate-x-1', 'bg-neutral-400');
+            financialModeKnob.classList.add('translate-x-6', 'bg-white');
+            financialModeToggle.setAttribute('aria-checked', 'true');
+        } else {
+            financialModeToggle.classList.remove('bg-green-500');
+            financialModeToggle.classList.add('bg-neutral-700');
+            financialModeKnob.classList.remove('translate-x-6', 'bg-white');
+            financialModeKnob.classList.add('translate-x-1', 'bg-neutral-400');
+            financialModeToggle.setAttribute('aria-checked', 'false');
+        }
+    }
+
+    financialModeToggle.addEventListener('click', function() {
+        financialModeEnabled = !financialModeEnabled;
+        localStorage.setItem('financialModeEnabled', financialModeEnabled);
+        updateFinancialModeUI();
+    });
+
+    // Initialize Financial Mode UI
+    updateFinancialModeUI();
+
+    // Sidebar button event listeners
+    const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+    const settingsBtn = document.getElementById('settings-btn');
+
+    // Close button hides sidebar
+    sidebarCloseBtn.addEventListener('click', hideSidebar);
+
+    // Toggle sidebar function
+    function toggleSidebar() {
+        if (sidebarVisible) {
+            hideSidebar();
+        } else {
+            showSidebar();
+        }
+    }
+
+    // Settings button toggles sidebar (main form)
+    settingsBtn.addEventListener('click', toggleSidebar);
+
+    // Settings button toggles sidebar (bottom form)
+    document.querySelectorAll('.settings-btn-trigger').forEach(btn => {
+        btn.addEventListener('click', toggleSidebar);
+    });
+
+    // Initialize sidebar visibility
+    updateSidebarVisibility();
+</script>
+{% endblock %}

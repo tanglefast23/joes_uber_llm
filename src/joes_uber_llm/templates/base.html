@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Joe's Uber LLM{% endblock %}</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .chat-container {
+            height: calc(100vh - 250px);
+        }
+        .loading-indicator {
+            display: none;
+        }
+        .htmx-request .loading-indicator {
+            display: inline-block;
+        }
+        .htmx-request .send-text {
+            display: none;
+        }
+        pre code {
+            display: block;
+            padding: 1rem;
+            overflow-x: auto;
+            background: #1e293b;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 h-screen overflow-hidden">
+    {% block content %}{% endblock %}
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -21,20 +21,35 @@ class Settings:
 
 # Available models per provider
 PROVIDER_MODELS: dict[str, list[str]] = {
-    "openai": ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo"],
+    "openai": [
+        "gpt-5.2",
+        "gpt-5.2-instant",
+        "gpt-5.2-thinking",
+        "gpt-5.2-pro",
+        "gpt-4o",
+        "gpt-4o-mini",
+    ],
     "anthropic": [
+        "claude-opus-4-5-20251101",
+        "claude-sonnet-4-5-20250929",
+        "claude-haiku-4-5-20251001",
         "claude-sonnet-4-20250514",
-        "claude-3-5-haiku-20241022",
         "claude-opus-4-20250514",
     ],
-    "google": ["gemini-2.0-flash-exp", "gemini-1.5-flash-002", "gemini-1.5-pro-002"],
+    "google": [
+        "gemini-3-flash-preview",
+        "gemini-3-pro-preview",
+        "gemini-2.5-flash",
+        "gemini-2.5-flash-lite",
+        "gemini-2.0-flash",
+    ],
 }
 
 # Default model per provider
 DEFAULT_MODELS: dict[str, str] = {
-    "openai": "gpt-4o-mini",
-    "anthropic": "claude-sonnet-4-20250514",
-    "google": "gemini-2.0-flash-exp",
+    "openai": "gpt-5.2",
+    "anthropic": "claude-sonnet-4-5-20250929",
+    "google": "gemini-2.0-flash",
 }
 
 

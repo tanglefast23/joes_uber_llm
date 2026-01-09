@@ -66,9 +66,13 @@ class GoogleProvider(BaseProvider):
             if msg.role == "system":
                 system_instruction = msg.content
             elif msg.role == "user":
-                contents.append(types.Content(role="user", parts=[types.Part(text=msg.content)]))
+                contents.append(
+                    types.Content(role="user", parts=[types.Part(text=msg.content)])
+                )
             elif msg.role == "assistant":
-                contents.append(types.Content(role="model", parts=[types.Part(text=msg.content)]))
+                contents.append(
+                    types.Content(role="model", parts=[types.Part(text=msg.content)])
+                )
 
         try:
             config = types.GenerateContentConfig(

@@ -11,7 +11,7 @@ from fastapi import APIRouter, Form, Header, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from joes_uber_llm.config import PROVIDER_MODELS
+from joes_uber_llm.config import DEFAULT_MODELS, PROVIDER_MODELS
 from joes_uber_llm.providers import AnthropicProvider, GoogleProvider, OpenAIProvider
 from joes_uber_llm.providers.base import BaseProvider, Message
 
@@ -193,12 +193,13 @@ async def validate_api_key(
 
     provider_instance = PROVIDERS[provider]
     test_message = [Message(role="user", content="Hi")]
+    validation_model = DEFAULT_MODELS.get(provider, provider_instance.available_models[-1])
 
     try:
-        # Make a minimal request to validate the key
+        # Make a minimal request to validate the key using a stable default model
         await provider_instance.chat(
             messages=test_message,
-            model=provider_instance.available_models[0],
+            model=validation_model,
             api_key=api_key,
         )
         return {"valid": True}
@@ -316,7 +317,9 @@ async def chat_multi(
         raise HTTPException(status_code=400, detail="No active providers")
 
     if len(provider_list) != len(model_list) or len(provider_list) != len(api_key_list):
-        raise HTTPException(status_code=400, detail="Mismatched provider/model/key lists")
+        raise HTTPException(
+            status_code=400, detail="Mismatched provider/model/key lists"
+        )
 
     session_id = get_or_create_session(x_session_id)
 
@@ -324,7 +327,9 @@ async def chat_multi(
     start_time = time.time()
     tasks = [
         _call_provider(provider, model, api_key, session_id, message, start_time)
-        for provider, model, api_key in zip(provider_list, model_list, api_key_list)
+        for provider, model, api_key in zip(
+            provider_list, model_list, api_key_list, strict=True
+        )
     ]
 
     # Run all tasks concurrently
@@ -355,26 +360,26 @@ async def chat_multi(
     return response
 
 
-AGGREGATOR_SYSTEM_PROMPT = """You are an expert answer aggregator. You will be given a user's question and multiple responses from different AI assistants.
-
-Your task is to:
-1. Synthesize the best parts of all responses into one superior, comprehensive answer
-2. Give more weight to higher quality responses when combining
-3. Rate each response from 1-10 based on accuracy, completeness, and helpfulness
-4. Identify any responses that contain hallucinations or wildly inconsistent information
-
-Format your response EXACTLY as follows:
-
-## Uber Answer
-[Your synthesized, superior answer that combines the best elements from all responses. This should be comprehensive and well-formatted.]
-
-## Response Ratings
-- [Provider 1]: [X/10] - [Brief reason]
-- [Provider 2]: [X/10] - [Brief reason]
-- [Provider 3]: [X/10] - [Brief reason]
-
-## Hallucination Check
-[Note any responses with potentially false or inconsistent information, or state "No hallucinations detected"]"""
+AGGREGATOR_SYSTEM_PROMPT = (
+    "You are an expert answer aggregator. You will be given a user's question "
+    "and multiple responses from different AI assistants.\n\n"
+    "Your task is to:\n"
+    "1. Synthesize the best parts of all responses into one superior answer\n"
+    "2. Give more weight to higher quality responses when combining\n"
+    "3. Rate each response from 1-10 based on accuracy and helpfulness\n"
+    "4. Identify any responses with hallucinations or inconsistent information\n\n"
+    "Format your response EXACTLY as follows:\n\n"
+    "## Uber Answer\n"
+    "[Your synthesized, superior answer that combines the best elements. "
+    "This should be comprehensive and well-formatted.]\n\n"
+    "## Response Ratings\n"
+    "- [Provider 1]: [X/10] - [Brief reason]\n"
+    "- [Provider 2]: [X/10] - [Brief reason]\n"
+    "- [Provider 3]: [X/10] - [Brief reason]\n\n"
+    "## Hallucination Check\n"
+    "[Note any responses with false or inconsistent information, "
+    'or state "No hallucinations detected"]'
+)
 
 
 @router.post("/aggregate")
@@ -385,7 +390,7 @@ async def aggregate_responses(
     aggregator_provider: Annotated[str, Form()],
     aggregator_model: Annotated[str, Form()],
     aggregator_api_key: Annotated[str, Form()],
-) -> dict:
+) -> dict[str, str | bool]:
     """Aggregate multiple LLM responses into one superior answer.
 
     Args:
@@ -403,8 +408,8 @@ async def aggregate_responses(
 
     try:
         responses_data = json.loads(responses_json)
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="Invalid responses JSON")
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=400, detail="Invalid responses JSON") from e
 
     if aggregator_provider not in PROVIDERS:
         raise HTTPException(status_code=400, detail="Invalid aggregator provider")
@@ -412,14 +417,17 @@ async def aggregate_responses(
     # Build the prompt for the aggregator
     responses_text = ""
     for resp in responses_data:
-        responses_text += f"\n### {resp['provider'].upper()} ({resp['model']}):\n{resp['response']}\n"
+        responses_text += (
+            f"\n### {resp['provider'].upper()} ({resp['model']}):\n{resp['response']}\n"
+        )
 
-    aggregator_prompt = f"""User's Question: {user_question}
-
-Here are the responses from different AI assistants:
-{responses_text}
-
-Please analyze these responses and provide your aggregated answer following the format specified."""
+    aggregator_prompt = (
+        f"User's Question: {user_question}\n\n"
+        f"Here are the responses from different AI assistants:\n"
+        f"{responses_text}\n\n"
+        f"Please analyze these responses and provide your aggregated answer "
+        f"following the format specified."
+    )
 
     # Call the aggregator LLM
     provider_instance = PROVIDERS[aggregator_provider]

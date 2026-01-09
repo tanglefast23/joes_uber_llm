@@ -170,10 +170,14 @@
                 <p class="text-xs text-neutral-500 mb-3">Select which LLM will aggregate and synthesize all responses into one superior answer</p>
 
                 <div class="mb-3">
-                    <label class="flex items-center text-sm font-medium text-neutral-400 mb-2">
-                        <input type="checkbox" id="aggregator-enabled" class="mr-2 accent-neutral-500">
-                        Enable Uber Answer
-                    </label>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-neutral-300">Enable Uber Answer</span>
+                        <button type="button" id="uber-answer-toggle" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-green-600" role="switch" aria-checked="true">
+                            <span class="sr-only">Enable Uber Answer</span>
+                            <span id="uber-answer-knob" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6"></span>
+                        </button>
+                        <input type="checkbox" id="aggregator-enabled" class="hidden" checked>
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -1440,13 +1444,45 @@ Best opportunity: TICKER because [reason]`;
     // Initialize Aggregator visibility
     updateAggregatorVisibility();
 
-    // Load saved aggregator settings
-    const savedAggregatorEnabled = localStorage.getItem('aggregatorEnabled') === 'true';
+    // Load saved aggregator settings (default to true if not set)
+    const savedAggregatorEnabled = localStorage.getItem('aggregatorEnabled');
+    const aggregatorEnabledValue = savedAggregatorEnabled === null ? true : savedAggregatorEnabled === 'true';
     const savedAggregatorProvider = localStorage.getItem('aggregatorProvider') || 'anthropic';
     const savedAggregatorModel = localStorage.getItem('aggregatorModel');
 
-    aggregatorEnabled.checked = savedAggregatorEnabled;
+    aggregatorEnabled.checked = aggregatorEnabledValue;
     aggregatorProvider.value = savedAggregatorProvider;
+
+    // Uber Answer toggle elements
+    const uberAnswerToggle = document.getElementById('uber-answer-toggle');
+    const uberAnswerKnob = document.getElementById('uber-answer-knob');
+
+    // Function to update Uber Answer toggle UI
+    function updateUberAnswerToggleUI() {
+        if (aggregatorEnabled.checked) {
+            uberAnswerToggle.classList.remove('bg-neutral-700');
+            uberAnswerToggle.classList.add('bg-green-600');
+            uberAnswerKnob.classList.remove('translate-x-1');
+            uberAnswerKnob.classList.add('translate-x-6');
+            uberAnswerToggle.setAttribute('aria-checked', 'true');
+        } else {
+            uberAnswerToggle.classList.remove('bg-green-600');
+            uberAnswerToggle.classList.add('bg-neutral-700');
+            uberAnswerKnob.classList.remove('translate-x-6');
+            uberAnswerKnob.classList.add('translate-x-1');
+            uberAnswerToggle.setAttribute('aria-checked', 'false');
+        }
+    }
+
+    // Initialize toggle UI
+    updateUberAnswerToggleUI();
+
+    // Toggle click handler
+    uberAnswerToggle.addEventListener('click', function() {
+        aggregatorEnabled.checked = !aggregatorEnabled.checked;
+        localStorage.setItem('aggregatorEnabled', aggregatorEnabled.checked);
+        updateUberAnswerToggleUI();
+    });
 
     // Update aggregator model dropdown based on provider
     function updateAggregatorModels() {
@@ -1469,9 +1505,7 @@ Best opportunity: TICKER because [reason]`;
         localStorage.setItem('aggregatorModel', this.value);
     });
 
-    aggregatorEnabled.addEventListener('change', function() {
-        localStorage.setItem('aggregatorEnabled', this.checked);
-    });
+    // Note: aggregatorEnabled change is handled by uberAnswerToggle click handler
 
     // Initialize aggregator models
     updateAggregatorModels();

@@ -1,6 +1,7 @@
 """Anthropic provider implementation."""
 
 import logging
+from typing import Any
 
 from anthropic import Anthropic, APIError
 
@@ -69,7 +70,7 @@ class AnthropicProvider(BaseProvider):
 
         try:
             # Build request kwargs
-            request_kwargs: dict = {
+            request_kwargs: dict[str, Any] = {
                 "model": model,
                 "max_tokens": 4096,
                 "messages": anthropic_messages,
@@ -77,11 +78,11 @@ class AnthropicProvider(BaseProvider):
             if system_content:
                 request_kwargs["system"] = system_content
 
-            response = client.messages.create(**request_kwargs)  # type: ignore[arg-type]
+            response = client.messages.create(**request_kwargs)
             if response.content and len(response.content) > 0:
                 first_block = response.content[0]
                 if hasattr(first_block, "text"):
-                    return first_block.text
+                    return str(first_block.text)
             raise RuntimeError("Anthropic returned empty response")
         except APIError as e:
             logger.error("Anthropic API error: %s", e)

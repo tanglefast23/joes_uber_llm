@@ -73,9 +73,7 @@ class TestChatRoutes:
     @pytest.mark.asyncio
     async def test_chat_success(self, client: AsyncClient) -> None:
         """Test successful chat request."""
-        with patch(
-            "joes_uber_llm.routes.chat.PROVIDERS"
-        ) as mock_providers:
+        with patch("joes_uber_llm.routes.chat.PROVIDERS") as mock_providers:
             mock_provider = AsyncMock()
             mock_provider.chat.return_value = "Hello! How can I help?"
             mock_providers.__getitem__.return_value = mock_provider

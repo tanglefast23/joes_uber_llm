@@ -289,6 +289,68 @@ async def _call_provider(
         return None
 
 
+async def _call_provider_debate(
+    provider_name: str,
+    model: str,
+    api_key: str,
+    original_question: str,
+    own_response: str,
+    other_responses: list[dict[str, str]],
+    start_time: float,
+) -> dict[str, str | int] | None:
+    """Call a provider for debate round revision.
+
+    Args:
+        provider_name: Name of the provider.
+        model: Model identifier.
+        api_key: API key for the provider.
+        original_question: The user's original question.
+        own_response: This provider's original response.
+        other_responses: List of other providers' responses.
+        start_time: Start timestamp for elapsed time calculation.
+
+    Returns:
+        Dictionary with provider, model, original_response, revised_response,
+        and elapsed_ms if successful, None if failed.
+    """
+    provider_instance = PROVIDERS.get(provider_name)
+    if not provider_instance:
+        return None
+
+    # Format other responses for the prompt
+    other_responses_text = "\n\n".join(
+        f"### {resp['provider'].upper()} ({resp['model']}):\n{resp['response']}"
+        for resp in other_responses
+    )
+
+    debate_prompt = DEBATE_ROUND_PROMPT_TEMPLATE.format(
+        original_question=original_question,
+        own_response=own_response,
+        other_responses=other_responses_text,
+    )
+
+    messages = [Message(role="user", content=debate_prompt)]
+
+    try:
+        revised_response = await provider_instance.chat(
+            messages=messages,
+            model=model,
+            api_key=api_key,
+        )
+
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        return {
+            "provider": provider_name,
+            "model": model,
+            "original_response": own_response,
+            "revised_response": revised_response,
+            "elapsed_ms": elapsed_ms,
+        }
+    except (ValueError, RuntimeError) as e:
+        logger.error("Debate round error for %s: %s", provider_name, e)
+        return None
+
+
 @router.post("/chat-multi", response_class=HTMLResponse)
 async def chat_multi(
     request: Request,
@@ -383,6 +445,16 @@ AGGREGATOR_SYSTEM_PROMPT = (
     'or state "No hallucinations detected"]'
 )
 
+DEBATE_ROUND_PROMPT_TEMPLATE = (
+    "You previously answered the question: \"{original_question}\"\n\n"
+    "Your original answer was:\n{own_response}\n\n"
+    "Here are the responses from other AI assistants:\n{other_responses}\n\n"
+    "What do you think of these thoughts? Revise your answer based on what you "
+    "think you missed that was good from these other perspectives and/or revise "
+    "if they've given you good information to improve with.\n\n"
+    "Provide your complete, improved final answer."
+)
+
 
 @router.post("/aggregate")
 async def aggregate_responses(
@@ -448,3 +520,86 @@ async def aggregate_responses(
     except (ValueError, RuntimeError) as e:
         logger.error("Aggregator error: %s", e)
         return {"success": False, "error": str(e)}
+
+
+@router.post("/debate-round")
+async def debate_round(
+    original_question: Annotated[str, Form()],
+    responses_json: Annotated[str, Form()],
+    providers: Annotated[str, Form()],
+    models: Annotated[str, Form()],
+    api_keys: Annotated[str, Form()],
+) -> dict[str, list[dict[str, str | int]] | bool | str]:
+    """Execute debate round where each LLM revises based on others' answers.
+
+    Args:
+        original_question: The user's original question.
+        responses_json: JSON string of initial provider responses.
+        providers: Comma-separated list of provider names.
+        models: Comma-separated list of model identifiers.
+        api_keys: Comma-separated list of API keys.
+
+    Returns:
+        Dictionary with revised responses or error information.
+
+    Raises:
+        HTTPException: If fewer than 2 providers or invalid JSON.
+    """
+    import json
+
+    try:
+        initial_responses = json.loads(responses_json)
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=400, detail="Invalid responses JSON") from e
+
+    provider_list = [p.strip() for p in providers.split(",") if p.strip()]
+    model_list = [m.strip() for m in models.split(",") if m.strip()]
+    api_key_list = [k.strip() for k in api_keys.split(",") if k.strip()]
+
+    if len(provider_list) < 2:
+        raise HTTPException(
+            status_code=400,
+            detail="Debate mode requires at least 2 active providers",
+        )
+
+    if len(provider_list) != len(model_list) or len(provider_list) != len(api_key_list):
+        raise HTTPException(
+            status_code=400,
+            detail="Mismatched provider/model/key lists",
+        )
+
+    # Create lookup for responses by provider
+    response_lookup = {r["provider"]: r for r in initial_responses}
+
+    # Create debate tasks for each provider
+    start_time = time.time()
+    tasks = []
+
+    for provider, model, api_key in zip(
+        provider_list, model_list, api_key_list, strict=True
+    ):
+        own_response = response_lookup.get(provider, {}).get("response", "")
+        other_responses = [r for r in initial_responses if r["provider"] != provider]
+
+        tasks.append(
+            _call_provider_debate(
+                provider_name=provider,
+                model=model,
+                api_key=api_key,
+                original_question=original_question,
+                own_response=own_response,
+                other_responses=other_responses,
+                start_time=start_time,
+            )
+        )
+
+    # Run all debate tasks concurrently
+    results = await asyncio.gather(*tasks)
+
+    # Filter successful results
+    revised_responses = [r for r in results if r is not None]
+
+    if not revised_responses:
+        return {"success": False, "error": "All providers failed during debate round"}
+
+    return {"success": True, "responses": revised_responses}

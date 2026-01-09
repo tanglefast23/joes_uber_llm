@@ -819,25 +819,35 @@ Best opportunity: TICKER because [reason]`;
     </svg>`;
 
     // Create Uber Answer placeholder with spinner
-    function createUberPlaceholder() {
+    function createUberPlaceholder(isDebated = false) {
+        const title = isDebated ? 'Debated Uber Answer' : 'Uber Answer';
+        const subtitle = isDebated ? 'Synthesized from debated responses' : 'Synthesized from all responses';
+        const gradientClass = isDebated
+            ? 'bg-gradient-to-br from-purple-500 to-pink-600 shadow-purple-500/30'
+            : 'bg-gradient-to-br from-amber-500 to-orange-600 shadow-amber-500/30';
+        const textGradient = isDebated
+            ? 'from-purple-400 to-pink-500'
+            : 'from-amber-400 to-orange-500';
+        const spinnerColor = isDebated ? 'text-purple-400' : 'text-amber-400';
+
         return `
             <div class="mt-6 uber-answer-frame">
                 <!-- Uber Answer Header -->
                 <div class="flex items-center gap-3 mb-3 px-2">
-                    <div class="p-2 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg shadow-lg shadow-amber-500/30">
+                    <div class="p-2 ${gradientClass} rounded-lg shadow-lg">
                         <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                             <circle cx="12" cy="12" r="3" fill="white" opacity="0.3"/>
                         </svg>
                     </div>
                     <div>
-                        <span class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">Uber Answer</span>
-                        <p class="text-xs text-neutral-500">Synthesized from all responses</p>
+                        <span class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r ${textGradient}">${title}</span>
+                        <p class="text-xs text-neutral-500">${subtitle}</p>
                     </div>
                 </div>
                 <!-- Loading Spinner -->
                 <div class="uber-loading-spinner flex items-center gap-2 px-4 py-2">
-                    <svg class="w-4 h-4 animate-spin text-amber-400" fill="none" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 animate-spin ${spinnerColor}" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -1006,14 +1016,147 @@ Best opportunity: TICKER because [reason]`;
 
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                // If aggregator is enabled and we have at least 2 responses, show placeholder and call it
-                if (aggregatorEnabled.checked && activeProviders.length >= 2) {
-                    // Add Uber Answer placeholder
-                    chatContainer.insertAdjacentHTML('beforeend', createUberPlaceholder());
+                // If debated mode is enabled and we have at least 2 responses, run debate round
+                let finalResponses = responsesForAggregator;
+                if (debatedModeEnabled && responsesForAggregator.length >= 2) {
+                    // Show debate status
+                    const debateStatus = document.createElement('div');
+                    debateStatus.className = 'debate-status-container my-4 p-4 bg-neutral-800/50 border border-purple-500/30 rounded-xl';
+                    debateStatus.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 animate-spin text-purple-400" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span class="text-purple-400 font-semibold">Debate Round</span>
+                            <span class="text-xs text-neutral-500">LLMs reviewing each other's answers...</span>
+                        </div>
+                    `;
+                    chatContainer.appendChild(debateStatus);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                    // Call aggregator
-                    const aggregatorResult = await callAggregator(message, responsesForAggregator);
+                    // Call debate round endpoint
+                    const debateFormData = new FormData();
+                    debateFormData.append('original_question', message);
+                    debateFormData.append('responses_json', JSON.stringify(responsesForAggregator));
+                    debateFormData.append('providers', activeProviders.map(p => p.provider).join(','));
+                    debateFormData.append('models', activeProviders.map(p => p.model).join(','));
+                    debateFormData.append('api_keys', activeProviders.map(p => p.apiKey).join(','));
+
+                    try {
+                        const debateResponse = await fetch('/api/debate-round', {
+                            method: 'POST',
+                            body: debateFormData
+                        });
+
+                        const debateResult = await debateResponse.json();
+
+                        if (debateResult.success) {
+                            // Update responsesForAggregator with revised responses
+                            finalResponses = debateResult.responses.map(r => ({
+                                provider: r.provider,
+                                model: r.model,
+                                response: r.revised_response
+                            }));
+
+                            // Update debate status to show completion
+                            debateStatus.innerHTML = `
+                                <div class="flex items-center gap-3 mb-3">
+                                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span class="text-purple-400 font-semibold">Debate Complete</span>
+                                    <span class="text-xs text-neutral-500">LLMs have revised their answers</span>
+                                </div>
+                            `;
+
+                            // Update each response frame with revised answer and "View Original" toggle
+                            debateResult.responses.forEach(r => {
+                                const frame = responsesContainer.querySelector(`[data-provider="${r.provider}"]`);
+                                if (frame) {
+                                    // Store original response
+                                    frame.dataset.originalResponse = r.original_response;
+                                    frame.dataset.response = r.revised_response;
+                                    frame.dataset.isRevised = 'true';
+
+                                    // Update the response text
+                                    const responseTextEl = frame.querySelector('.response-text');
+                                    if (responseTextEl) {
+                                        responseTextEl.textContent = r.revised_response;
+                                        responseTextEl.dataset.formatted = '';
+                                    }
+
+                                    // Add "View Original" toggle to header if not already present
+                                    const header = frame.querySelector('.response-header');
+                                    if (header && !header.querySelector('.view-original-toggle')) {
+                                        const toggleBtn = document.createElement('button');
+                                        toggleBtn.className = 'view-original-toggle text-xs text-purple-400 hover:text-purple-300 ml-2';
+                                        toggleBtn.textContent = 'View Original';
+                                        toggleBtn.onclick = function(e) {
+                                            e.stopPropagation();
+                                            const content = frame.querySelector('.response-content');
+                                            const textEl = frame.querySelector('.response-text');
+                                            const isShowingOriginal = toggleBtn.dataset.showingOriginal === 'true';
+
+                                            if (isShowingOriginal) {
+                                                textEl.innerHTML = formatMarkdown(frame.dataset.response);
+                                                toggleBtn.textContent = 'View Original';
+                                                toggleBtn.dataset.showingOriginal = 'false';
+                                            } else {
+                                                textEl.innerHTML = formatMarkdown(frame.dataset.originalResponse);
+                                                toggleBtn.textContent = 'View Revised';
+                                                toggleBtn.dataset.showingOriginal = 'true';
+                                            }
+                                            content.classList.remove('hidden');
+                                        };
+                                        header.appendChild(toggleBtn);
+
+                                        // Add revised badge
+                                        const badge = document.createElement('span');
+                                        badge.className = 'text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded ml-2';
+                                        badge.textContent = 'Revised';
+                                        const modelSpan = header.querySelector('.text-neutral-400');
+                                        if (modelSpan) modelSpan.after(badge);
+                                    }
+                                }
+                            });
+                        } else {
+                            // Debate failed - update status and use original responses
+                            debateStatus.innerHTML = `
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                    <span class="text-yellow-400 font-semibold">Debate Skipped</span>
+                                    <span class="text-xs text-neutral-500">Using original responses</span>
+                                </div>
+                            `;
+                        }
+                    } catch (err) {
+                        console.error('Debate round error:', err);
+                        debateStatus.innerHTML = `
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                                <span class="text-yellow-400 font-semibold">Debate Error</span>
+                                <span class="text-xs text-neutral-500">Using original responses</span>
+                            </div>
+                        `;
+                    }
+
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+
+                // If aggregator is enabled and we have at least 2 responses, show placeholder and call it
+                if (aggregatorEnabled.checked && finalResponses.length >= 2) {
+                    // Add Uber Answer placeholder (with debate indicator if applicable)
+                    const isDebated = debatedModeEnabled && finalResponses !== responsesForAggregator;
+                    chatContainer.insertAdjacentHTML('beforeend', createUberPlaceholder(isDebated));
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                    // Call aggregator with final responses (revised if debate happened)
+                    const aggregatorResult = await callAggregator(message, finalResponses);
 
                     // Find the uber answer frame and update it
                     const uberFrame = chatContainer.querySelector('.uber-answer-frame');

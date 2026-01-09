@@ -1,5 +1,7 @@
 """Page rendering routes."""
 
+from pathlib import Path
+
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -7,7 +9,8 @@ from fastapi.templating import Jinja2Templates
 from joes_uber_llm.config import DEFAULT_MODELS, PROVIDER_MODELS
 
 router = APIRouter()
-templates = Jinja2Templates(directory="src/joes_uber_llm/templates")
+TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
 @router.get("/", response_class=HTMLResponse)

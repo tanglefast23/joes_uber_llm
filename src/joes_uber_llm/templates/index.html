@@ -347,13 +347,15 @@
     let financialModeEnabled = localStorage.getItem('financialModeEnabled') === 'true';
 
     // Financial analysis prompt template
-    const FINANCIAL_PROMPT_TEMPLATE = `You are a Senior Portfolio Manager. Analyze these stocks: [stocks]
+    const FINANCIAL_PROMPT_TEMPLATE = `You are a Senior Portfolio Manager with access to current market data. Analyze these stocks: [stocks]
 
 RULES:
-- Use REAL financial data (actual numbers like $178.50, 44.1%, $2.78T)
-- Never use placeholder X's or template brackets
+- Start IMMEDIATELY with "STOCK 1:" - NO introduction, NO preamble, NO "Here is..." sentences
+- You MUST provide real financial data from your knowledge (actual numbers like $178.50, 44.1%, $2.78T)
+- Use the most recent data you have available - approximate values are acceptable
+- Never use placeholder X's, template brackets, or N/A - always provide your best estimate
 - Format with bullet points (•) and **bold** all numbers
-- If data unavailable, write "N/A"
+- Do NOT add a "REPORT" header or any header before STOCK 1
 
 For EACH stock, provide:
 
@@ -398,9 +400,9 @@ STOCK 1: TICKER - Company Name
 • 12-Month Target: **$XXX** (XX% upside/downside)
 
 ⚡ VERDICT
-• Rating: **Buy/Hold/Sell**
+• Investment Score: **X/10** (1-3=Sell, 4-6=Hold, 7-10=Buy)
+• Rating: **Buy/Hold/Sell** (MUST match the score above)
 • Confidence: **High/Medium/Low**
-• Score: **X/10**
 
 🏢 BUSINESS OVERVIEW
 • [1-2 sentence description]
@@ -808,7 +810,21 @@ Best opportunity: TICKER because [reason]`;
     // Create Uber Answer placeholder with spinner
     function createUberPlaceholder() {
         return `
-            <div class="mt-4 uber-answer-frame">
+            <div class="mt-6 uber-answer-frame">
+                <!-- Uber Answer Header -->
+                <div class="flex items-center gap-3 mb-3 px-2">
+                    <div class="p-2 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg shadow-lg shadow-amber-500/30">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            <circle cx="12" cy="12" r="3" fill="white" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">Uber Answer</span>
+                        <p class="text-xs text-neutral-500">Synthesized from all responses</p>
+                    </div>
+                </div>
+                <!-- Loading Spinner -->
                 <div class="uber-loading-spinner flex items-center gap-2 px-4 py-2">
                     <svg class="w-4 h-4 animate-spin text-amber-400" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -816,6 +832,7 @@ Best opportunity: TICKER because [reason]`;
                     </svg>
                     <span class="uber-status text-xs text-neutral-500">Aggregating responses...</span>
                 </div>
+                <!-- Response Content -->
                 <div class="uber-response-content px-4 py-4 hidden">
                     <div class="text-gray-100 text-sm uber-response"></div>
                 </div>
@@ -1074,6 +1091,18 @@ Best opportunity: TICKER because [reason]`;
         html = html.replace(/^Data as of:.*$/gm, '');
         html = html.replace(/^Sources:.*$/gm, '');
 
+        // Remove preamble sentences from Gemini/Claude/Uber Answer
+        // These are sentences like "Here is the Senior Portfolio Manager analysis..." or "As a Senior Portfolio Manager..."
+        html = html.replace(/^(Here is|As a Senior|I have|I'll|Let me|Below is|The following)[^.]*\.\s*/gim, '');
+        html = html.replace(/^[^<\n]*(?:analysis|synthesized|analyzed|provide|presenting)[^.]*\.\s*/gim, '');
+
+        // Remove "REPORT" section that Claude adds (standalone word at start)
+        html = html.replace(/^REPORT\s*(<br>|\n)*/gim, '');
+
+        // Remove stray "#" symbols that appear alone
+        html = html.replace(/^#\s*(<br>|\n)*$/gm, '');
+        html = html.replace(/(<br>|\n)#\s*(<br>|\n)/g, '$1');
+
         // Remove all separator lines (═══ or ---) - they'll be replaced by styled containers
         html = html.replace(/[═]{3,}/g, '');
         html = html.replace(/[-]{5,}/g, '');
@@ -1142,6 +1171,29 @@ Best opportunity: TICKER because [reason]`;
             'CVX': 'https://logo.clearbit.com/chevron.com',
         };
 
+        // Pre-process: Normalize different LLM output formats to standard "STOCK N:" format
+        // Handle "# STOCK ANALYSIS: TICKER" format (Claude)
+        html = html.replace(/#{1,2}\s*STOCK\s*ANALYSIS[:\s]+([A-Z0-9]+)(?:\s*[-–—]\s*([A-Za-z0-9 ,.&']+))?/gi,
+            function(match, ticker, name, offset) {
+                // Count how many stocks we've seen to assign a number
+                const precedingText = html.substring(0, offset);
+                const stockCount = (precedingText.match(/STOCK\s+\d+:/gi) || []).length + 1;
+                return `STOCK ${stockCount}: ${ticker}${name ? ' - ' + name : ''}`;
+            });
+
+        // Handle standalone "TICKER - Company Name" at start of response or after newlines (OpenAI)
+        // Only match if followed by typical stock analysis content
+        html = html.replace(/^([A-Z]{1,5})\s*[-–—]\s*([A-Z][A-Za-z0-9 ,.&']+(?:Inc\.?|Corp\.?|Company|Ltd\.?|LLC)?)\s*\n/gim,
+            function(match, ticker, name, offset) {
+                // Check if this looks like a stock ticker (1-5 uppercase letters)
+                if (ticker.length >= 1 && ticker.length <= 5 && stockLogos[ticker]) {
+                    const precedingText = html.substring(0, offset);
+                    const stockCount = (precedingText.match(/STOCK\s+\d+:/gi) || []).length + 1;
+                    return `STOCK ${stockCount}: ${ticker} - ${name}\n`;
+                }
+                return match;
+            });
+
         // First pass: Extract ratings and scores for each stock
         const stockRatings = {};
         const stockScores = {};
@@ -1157,7 +1209,8 @@ Best opportunity: TICKER because [reason]`;
             const ratingPatterns = [
                 /(?:Rating|Recommendation|Verdict)[:\s]*\*{0,2}(Strong Buy|Buy|Hold|Sell|Strong Sell)\*{0,2}/i,
                 /\*{0,2}(Strong Buy|Buy|Hold|Sell|Strong Sell)\*{0,2}[:\s]*(?:rating|recommendation)/i,
-                /(?:Overall|Final)[:\s]*\*{0,2}(Strong Buy|Buy|Hold|Sell|Strong Sell)\*{0,2}/i
+                /(?:Overall|Final)[:\s]*\*{0,2}(Strong Buy|Buy|Hold|Sell|Strong Sell)\*{0,2}/i,
+                /•\s*(?:Rating|Recommendation)[:\s]*\*{0,2}(Strong Buy|Buy|Hold|Sell|Strong Sell)\*{0,2}/i
             ];
             for (const pattern of ratingPatterns) {
                 const match = section.match(pattern);
@@ -1167,20 +1220,46 @@ Best opportunity: TICKER because [reason]`;
                 }
             }
 
-            // Find score - multiple patterns
+            // Find score - look specifically in VERDICT section for Investment Score
+            // Priority: "Investment Score: X/10" > "Score: X/10" > any "X/10"
+            const verdictMatch = section.match(/VERDICT[\s\S]*?(?=(?:BUSINESS|OVERVIEW|RISK|$))/i);
+            const verdictSection = verdictMatch ? verdictMatch[0] : section;
+
             const scorePatterns = [
-                /(?:Score|Rating)[:\s]*\*{0,2}(\d+)\s*\/\s*10\*{0,2}/i,
-                /(\d+)\s*\/\s*10\s*(?:score|rating|overall)/i,
+                /Investment\s*Score[:\s]*\*{0,2}(\d+)\s*\/\s*10\*{0,2}/i,
+                /(?:Score)[:\s]*\*{0,2}(\d+)\s*\/\s*10\*{0,2}/i,
                 /\*{0,2}(\d+)\/10\*{0,2}/i
             ];
             for (const pattern of scorePatterns) {
-                const match = section.match(pattern);
+                const match = verdictSection.match(pattern);
                 if (match) {
                     stockScores[stockNum] = match[1];
                     break;
                 }
             }
         });
+
+        // Helper to create rating badge HTML
+        function createRatingBadge(rating, score) {
+            if (!rating && !score) return '';
+
+            if (rating) {
+                const ratingLower = rating.toLowerCase();
+                let badgeColor, glowColor;
+                if (ratingLower.includes('strong buy')) { badgeColor = 'bg-green-500 text-white'; glowColor = 'shadow-green-500/50'; }
+                else if (ratingLower.includes('buy')) { badgeColor = 'bg-green-500 text-white'; glowColor = 'shadow-green-500/50'; }
+                else if (ratingLower.includes('hold')) { badgeColor = 'bg-yellow-500 text-black'; glowColor = 'shadow-yellow-500/50'; }
+                else if (ratingLower.includes('strong sell')) { badgeColor = 'bg-red-600 text-white'; glowColor = 'shadow-red-600/50'; }
+                else if (ratingLower.includes('sell')) { badgeColor = 'bg-red-500 text-white'; glowColor = 'shadow-red-500/50'; }
+                else { badgeColor = 'bg-neutral-500 text-white'; glowColor = 'shadow-neutral-500/50'; }
+
+                const scoreDisplay = score ? `<span class="ml-2 text-xl font-black">${score}/10</span>` : '';
+                return `<span class="px-4 py-2 rounded-lg text-lg font-black ${badgeColor} shadow-lg ${glowColor} flex items-center">${rating.toUpperCase()}${scoreDisplay}</span>`;
+            } else if (score) {
+                return `<span class="px-4 py-2 rounded-lg text-xl font-black bg-neutral-600 text-white">${score}/10</span>`;
+            }
+            return '';
+        }
 
         // Mark STOCK headers: "STOCK N: TICKER - NAME" or "STOCK N: TICKER"
         // Note: Company name can include letters, spaces, commas, periods, ampersands
@@ -1196,23 +1275,7 @@ Best opportunity: TICKER because [reason]`;
                 logoHtml = `<img src="${logoUrl}" alt="${ticker}" class="w-10 h-10 rounded-lg bg-white p-1" onerror="this.style.display='none'">`;
             }
 
-            // Create prominent rating badge with score
-            let ratingBadge = '';
-            if (rating) {
-                const ratingLower = rating.toLowerCase();
-                let badgeColor, glowColor;
-                if (ratingLower.includes('strong buy')) { badgeColor = 'bg-green-500 text-white'; glowColor = 'shadow-green-500/50'; }
-                else if (ratingLower.includes('buy')) { badgeColor = 'bg-green-500 text-white'; glowColor = 'shadow-green-500/50'; }
-                else if (ratingLower.includes('hold')) { badgeColor = 'bg-amber-500 text-white'; glowColor = 'shadow-amber-500/50'; }
-                else if (ratingLower.includes('strong sell')) { badgeColor = 'bg-red-500 text-white'; glowColor = 'shadow-red-500/50'; }
-                else { badgeColor = 'bg-red-500 text-white'; glowColor = 'shadow-red-500/50'; }
-
-                const scoreDisplay = score ? `<span class="ml-2 text-xl font-black">${score}/10</span>` : '';
-                ratingBadge = `<span class="px-4 py-2 rounded-lg text-lg font-black ${badgeColor} shadow-lg ${glowColor} flex items-center">${rating.toUpperCase()}${scoreDisplay}</span>`;
-            } else if (score) {
-                // If we have score but no rating
-                ratingBadge = `<span class="px-4 py-2 rounded-lg text-xl font-black bg-neutral-600 text-white">${score}/10</span>`;
-            }
+            const ratingBadge = createRatingBadge(rating, score);
 
             return `%%SECTION_END%%<div class="stock-section bg-neutral-800/50 border border-neutral-700 rounded-xl p-5 my-4"><div class="stock-header flex items-center flex-wrap gap-4 mb-4 pb-3 border-b border-neutral-600">${logoHtml}<span class="text-2xl font-bold text-white">${ticker}${cleanName ? ' - ' + cleanName.toUpperCase() : ''}</span>${ratingBadge}</div><div class="stock-content">`;
         });
@@ -1220,6 +1283,18 @@ Best opportunity: TICKER because [reason]`;
         // Remove Rating and Score lines from VERDICT section since rating is now in header
         html = html.replace(/•\s*Rating:\s*\*{0,2}[^*\n]+\*{0,2}/gi, '');
         html = html.replace(/•\s*Score:\s*\*{0,2}[^*\n]+\*{0,2}/gi, '');
+        html = html.replace(/•\s*Investment\s*Score:\s*\*{0,2}[^*\n]+\*{0,2}/gi, '');
+
+        // Remove duplicate stock name lines (e.g., "MU - MICRON TECHNOLOGY" appearing after header)
+        // These appear as standalone lines with just ticker and company name
+        html = html.replace(/<div class="stock-content">(\s*<br>)*\s*([A-Z]{1,5})\s*[-–—]\s*[A-Z][A-Za-z0-9 ,.&']+\s*(<br>|<\/?\w+[^>]*>|\n)*/gi,
+            '<div class="stock-content">');
+
+        // Also remove lines that are just "(TICKER)" in parentheses
+        html = html.replace(/\([A-Z]{1,5}\)\s*(<br>)?/gi, '');
+
+        // Remove "---" separator lines that Claude adds
+        html = html.replace(/---\s*(<br>)?/g, '');
 
         // Mark PORTFOLIO SUMMARY
         html = html.replace(/PORTFOLIO SUMMARY/gi,
@@ -1249,8 +1324,11 @@ Best opportunity: TICKER because [reason]`;
         // Convert **bold** text - make numbers stand out in amber
         html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="text-amber-300 font-semibold">$1</strong>');
 
-        // Convert bullet points with • character
-        html = html.replace(/•\s*([^\n]+)/g, '<div class="flex items-start gap-2 ml-2 my-1"><span class="text-amber-400">•</span><span>$1</span></div>');
+        // Convert bullet points with • character (minimal spacing)
+        html = html.replace(/•\s*([^\n]+)/g, '<div class="flex items-start gap-2 ml-2"><span class="text-amber-400">•</span><span>$1</span></div>');
+
+        // Remove excessive line breaks between bullet points
+        html = html.replace(/(<\/div>)\s*(<br>\s*)+(<div class="flex)/g, '$1$3');
 
         // Format Response Ratings items with provider names and scores - add spacing
         html = html.replace(/-\s*\[([A-Z]+)\s*\(([^)]+)\)\]:\s*\[(\d+)\/10\]\s*-\s*([^\n<]+)/gi, function(match, provider, model, score, reason) {
@@ -1268,14 +1346,16 @@ Best opportunity: TICKER because [reason]`;
         });
 
         // Format Portfolio Summary stock ratings with visual badges
+        // Colors: Buy=green, Hold=yellow, Sell=red
         html = html.replace(/•\s*([A-Z]+):\s*(Strong Buy|Buy|Hold|Sell|Strong Sell)\s*-\s*([^\n<]+)/gi, function(match, ticker, rating, reason) {
             const ratingLower = rating.toLowerCase();
             let ratingColor, ratingBg;
-            if (ratingLower.includes('strong buy')) { ratingColor = 'text-green-300'; ratingBg = 'bg-green-600'; }
-            else if (ratingLower.includes('buy')) { ratingColor = 'text-green-300'; ratingBg = 'bg-green-500/80'; }
-            else if (ratingLower.includes('hold')) { ratingColor = 'text-amber-300'; ratingBg = 'bg-amber-500/80'; }
-            else if (ratingLower.includes('strong sell')) { ratingColor = 'text-red-300'; ratingBg = 'bg-red-600'; }
-            else { ratingColor = 'text-red-300'; ratingBg = 'bg-red-500/80'; }
+            if (ratingLower.includes('strong buy')) { ratingColor = 'text-white'; ratingBg = 'bg-green-600'; }
+            else if (ratingLower.includes('buy')) { ratingColor = 'text-white'; ratingBg = 'bg-green-500'; }
+            else if (ratingLower.includes('hold')) { ratingColor = 'text-black'; ratingBg = 'bg-yellow-500'; }
+            else if (ratingLower.includes('strong sell')) { ratingColor = 'text-white'; ratingBg = 'bg-red-600'; }
+            else if (ratingLower.includes('sell')) { ratingColor = 'text-white'; ratingBg = 'bg-red-500'; }
+            else { ratingColor = 'text-white'; ratingBg = 'bg-neutral-500'; }
             return `<div class="flex items-center gap-3 my-2 p-2 bg-neutral-800/50 rounded-lg">
                 <span class="font-bold text-white text-lg">${ticker}</span>
                 <span class="px-2 py-1 rounded text-xs font-bold ${ratingBg} ${ratingColor}">${rating.toUpperCase()}</span>
@@ -1306,8 +1386,11 @@ Best opportunity: TICKER because [reason]`;
         // Convert line breaks
         html = html.replace(/\n/g, '<br>');
 
-        // Clean up multiple <br> tags
-        html = html.replace(/(<br>\s*){3,}/g, '<br><br>');
+        // Clean up multiple <br> tags - be aggressive, max 1 between content
+        html = html.replace(/(<br>\s*){2,}/g, '<br>');
+
+        // Remove <br> between bullet point divs completely
+        html = html.replace(/(<\/div>)\s*(<br>\s*)+(<div class="flex)/g, '$1$3');
 
         // Clean up <br> right after opening stock-content div
         html = html.replace(/<div class="stock-content">(\s*<br>)+/g, '<div class="stock-content">');

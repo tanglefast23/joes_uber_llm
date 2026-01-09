@@ -3,21 +3,28 @@
 {% block content %}
 <div class="relative h-screen">
     <!-- Left Sidebar - Settings (overlay) -->
-    <div id="sidebar" class="absolute left-0 top-0 h-full z-50 bg-neutral-900 flex flex-col border-r border-neutral-800 transition-transform duration-300 w-72 overflow-y-auto shadow-2xl -translate-x-full">
+    <div id="sidebar"
+        class="absolute left-0 top-0 h-full z-50 bg-neutral-900 flex flex-col border-r border-neutral-800 transition-transform duration-300 w-72 overflow-y-auto shadow-2xl -translate-x-full">
         <!-- Sidebar Header with Close Button -->
         <div class="flex items-center justify-between p-4 border-b border-neutral-800">
             <span class="text-lg font-semibold text-neutral-200">Settings</span>
-            <button id="sidebar-close-btn" class="text-neutral-500 hover:text-white transition-colors p-1 rounded hover:bg-neutral-800" title="Close sidebar">
+            <button id="sidebar-close-btn"
+                class="text-neutral-500 hover:text-white transition-colors p-1 rounded hover:bg-neutral-800"
+                title="Close sidebar">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
                 </svg>
             </button>
         </div>
 
         <!-- API Keys Section Toggle -->
-        <button id="sidebar-toggle" class="flex items-center gap-3 p-4 hover:bg-neutral-800 transition-colors border-b border-neutral-800">
-            <div class="w-6 h-6 flex items-center justify-center rounded bg-neutral-800 hover:bg-neutral-700 transition-colors">
-                <svg id="sidebar-toggle-icon" class="w-4 h-4 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="sidebar-toggle"
+            class="flex items-center gap-3 p-4 hover:bg-neutral-800 transition-colors border-b border-neutral-800">
+            <div
+                class="w-6 h-6 flex items-center justify-center rounded bg-neutral-800 hover:bg-neutral-700 transition-colors">
+                <svg id="sidebar-toggle-icon" class="w-4 h-4 text-neutral-500 transform transition-transform"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
             </div>
@@ -36,18 +43,23 @@
                             <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="openai-status"></span>
                             OpenAI
                         </span>
-                        <button type="button" class="eye-toggle text-neutral-500 hover:text-neutral-300" data-target="openai-key">
+                        <button type="button" class="eye-toggle text-neutral-500 hover:text-neutral-300"
+                            data-target="openai-key">
                             <svg class="w-4 h-4 eye-closed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21">
+                                </path>
                             </svg>
                             <svg class="w-4 h-4 eye-open hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                </path>
                             </svg>
                         </button>
                     </label>
-                    <input type="password" id="openai-key" placeholder="Hit Enter to Send"
-                        data-provider="openai"
+                    <input type="password" id="openai-key" placeholder="Hit Enter to Send" data-provider="openai"
                         class="api-key-input w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
                 </div>
 
@@ -58,18 +70,23 @@
                             <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="anthropic-status"></span>
                             Anthropic
                         </span>
-                        <button type="button" class="eye-toggle text-neutral-500 hover:text-neutral-300" data-target="anthropic-key">
+                        <button type="button" class="eye-toggle text-neutral-500 hover:text-neutral-300"
+                            data-target="anthropic-key">
                             <svg class="w-4 h-4 eye-closed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21">
+                                </path>
                             </svg>
                             <svg class="w-4 h-4 eye-open hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                </path>
                             </svg>
                         </button>
                     </label>
-                    <input type="password" id="anthropic-key" placeholder="Hit Enter to Send"
-                        data-provider="anthropic"
+                    <input type="password" id="anthropic-key" placeholder="Hit Enter to Send" data-provider="anthropic"
                         class="api-key-input w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
                 </div>
 
@@ -80,34 +97,44 @@
                             <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="google-status"></span>
                             Google
                         </span>
-                        <button type="button" class="eye-toggle text-neutral-500 hover:text-neutral-300" data-target="google-key">
+                        <button type="button" class="eye-toggle text-neutral-500 hover:text-neutral-300"
+                            data-target="google-key">
                             <svg class="w-4 h-4 eye-closed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21">
+                                </path>
                             </svg>
                             <svg class="w-4 h-4 eye-open hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                </path>
                             </svg>
                         </button>
                     </label>
-                    <input type="password" id="google-key" placeholder="Hit Enter to Send"
-                        data-provider="google"
+                    <input type="password" id="google-key" placeholder="Hit Enter to Send" data-provider="google"
                         class="api-key-input w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
                 </div>
 
                 <!-- Remember API Keys Checkbox -->
                 <div class="flex items-center mt-4 pb-3 border-b border-neutral-700">
-                    <input type="checkbox" id="remember-api-keys" class="w-4 h-4 rounded bg-neutral-700 border-neutral-600 text-green-500 focus:ring-green-500 focus:ring-offset-neutral-800">
-                    <label for="remember-api-keys" class="ml-2 text-sm text-neutral-400 cursor-pointer">Remember API keys</label>
+                    <input type="checkbox" id="remember-api-keys"
+                        class="w-4 h-4 rounded bg-neutral-700 border-neutral-600 text-green-500 focus:ring-green-500 focus:ring-offset-neutral-800">
+                    <label for="remember-api-keys" class="ml-2 text-sm text-neutral-400 cursor-pointer">Remember API
+                        keys</label>
                 </div>
 
             </div>
         </div>
 
         <!-- LLM Model Selection Section -->
-        <button id="models-toggle" class="flex items-center gap-3 p-4 hover:bg-neutral-800 transition-colors border-b border-neutral-800">
-            <div class="w-6 h-6 flex items-center justify-center rounded bg-neutral-800 hover:bg-neutral-700 transition-colors">
-                <svg id="models-toggle-icon" class="w-4 h-4 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="models-toggle"
+            class="flex items-center gap-3 p-4 hover:bg-neutral-800 transition-colors border-b border-neutral-800">
+            <div
+                class="w-6 h-6 flex items-center justify-center rounded bg-neutral-800 hover:bg-neutral-700 transition-colors">
+                <svg id="models-toggle-icon" class="w-4 h-4 text-neutral-500 transform transition-transform" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
             </div>
@@ -125,7 +152,8 @@
                         <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="openai-model-status"></span>
                         OpenAI
                     </label>
-                    <select id="openai-model" data-provider="openai" class="model-select w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                    <select id="openai-model" data-provider="openai"
+                        class="model-select w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
                         {% for m in provider_models['openai'] %}
                         <option value="{{ m }}">{{ m }}</option>
                         {% endfor %}
@@ -138,7 +166,8 @@
                         <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="anthropic-model-status"></span>
                         Anthropic
                     </label>
-                    <select id="anthropic-model" data-provider="anthropic" class="model-select w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                    <select id="anthropic-model" data-provider="anthropic"
+                        class="model-select w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
                         {% for m in provider_models['anthropic'] %}
                         <option value="{{ m }}">{{ m }}</option>
                         {% endfor %}
@@ -151,7 +180,8 @@
                         <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="google-model-status"></span>
                         Google
                     </label>
-                    <select id="google-model" data-provider="google" class="model-select w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                    <select id="google-model" data-provider="google"
+                        class="model-select w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
                         {% for m in provider_models['google'] %}
                         <option value="{{ m }}">{{ m }}</option>
                         {% endfor %}
@@ -164,16 +194,22 @@
         <div class="p-4 border-t border-neutral-800">
             <div class="flex items-center justify-between">
                 <button id="aggregator-toggle" class="flex items-center gap-3 hover:bg-neutral-800 transition-colors">
-                    <div class="w-6 h-6 flex items-center justify-center rounded bg-neutral-800 hover:bg-neutral-700 transition-colors">
-                        <svg id="aggregator-toggle-icon" class="w-4 h-4 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    <div
+                        class="w-6 h-6 flex items-center justify-center rounded bg-neutral-800 hover:bg-neutral-700 transition-colors">
+                        <svg id="aggregator-toggle-icon" class="w-4 h-4 text-neutral-500 transform transition-transform"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
                     </div>
                     <span class="text-lg font-semibold text-neutral-300 whitespace-nowrap">Uber Answer</span>
                 </button>
-                <button type="button" id="uber-answer-toggle" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-green-600" role="switch" aria-checked="true">
+                <button type="button" id="uber-answer-toggle"
+                    class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-green-600"
+                    role="switch" aria-checked="true">
                     <span class="sr-only">Enable Uber Answer</span>
-                    <span id="uber-answer-knob" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6"></span>
+                    <span id="uber-answer-knob"
+                        class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6"></span>
                 </button>
                 <input type="checkbox" id="aggregator-enabled" class="hidden" checked>
             </div>
@@ -183,11 +219,13 @@
         <!-- Aggregator Content -->
         <div id="aggregator-content">
             <div class="p-4 flex flex-col">
-                <p class="text-xs text-neutral-500 mb-3">Select which LLM will aggregate and synthesize all responses into one superior answer</p>
+                <p class="text-xs text-neutral-500 mb-3">Select which LLM will aggregate and synthesize all responses
+                    into one superior answer</p>
 
                 <div class="mb-3">
                     <label class="block text-sm font-medium text-neutral-400 mb-1">Aggregator LLM</label>
-                    <select id="aggregator-provider" class="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                    <select id="aggregator-provider"
+                        class="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
                         <option value="openai">OpenAI</option>
                         <option value="anthropic" selected>Anthropic</option>
                         <option value="google">Google</option>
@@ -196,14 +234,16 @@
 
                 <div class="mb-3">
                     <label class="block text-sm font-medium text-neutral-400 mb-1">Model</label>
-                    <select id="aggregator-model" class="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
+                    <select id="aggregator-model"
+                        class="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:ring-neutral-500 focus:border-neutral-600">
                         {% for m in provider_models['anthropic'] %}
                         <option value="{{ m }}">{{ m }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <p class="text-xs text-neutral-500 mt-2">The aggregator will rate each response, detect hallucinations, and combine the best answers.</p>
+                <p class="text-xs text-neutral-500 mt-2">The aggregator will rate each response, detect hallucinations,
+                    and combine the best answers.</p>
             </div>
         </div>
 
@@ -211,9 +251,12 @@
         <div class="p-4 border-t border-neutral-800">
             <div class="flex items-center justify-between">
                 <span class="text-lg font-semibold text-neutral-300">Super Uber Answer</span>
-                <button type="button" id="debated-mode-toggle" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-neutral-700" role="switch" aria-checked="false">
+                <button type="button" id="debated-mode-toggle"
+                    class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-neutral-700"
+                    role="switch" aria-checked="false">
                     <span class="sr-only">Enable Super Uber Answer</span>
-                    <span id="debated-mode-knob" class="inline-block h-4 w-4 transform rounded-full bg-neutral-400 transition-transform translate-x-1"></span>
+                    <span id="debated-mode-knob"
+                        class="inline-block h-4 w-4 transform rounded-full bg-neutral-400 transition-transform translate-x-1"></span>
                 </button>
             </div>
             <p class="text-xs text-neutral-500 mt-2">LLMs debate. Better Answer. Longer wait.</p>
@@ -223,9 +266,12 @@
         <div class="p-4 border-t border-neutral-800">
             <div class="flex items-center justify-between">
                 <span class="text-lg font-semibold text-neutral-300">Financial Mode</span>
-                <button type="button" id="financial-mode-toggle" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-neutral-700" role="switch" aria-checked="false">
+                <button type="button" id="financial-mode-toggle"
+                    class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-neutral-700"
+                    role="switch" aria-checked="false">
                     <span class="sr-only">Enable Financial Mode</span>
-                    <span id="financial-mode-knob" class="inline-block h-4 w-4 transform rounded-full bg-neutral-400 transition-transform translate-x-1"></span>
+                    <span id="financial-mode-knob"
+                        class="inline-block h-4 w-4 transform rounded-full bg-neutral-400 transition-transform translate-x-1"></span>
                 </button>
             </div>
             <p class="text-xs text-neutral-500 mt-2">Enter Tickers. Deep Analysis.</p>
@@ -233,20 +279,24 @@
 
         <!-- Connection Status Section -->
         <div class="p-4 pb-8 border-t border-neutral-800">
-            <p class="text-xs text-neutral-500 mb-3">Connection Status <span class="text-neutral-600">(click to disconnect)</span></p>
+            <p class="text-xs text-neutral-500 mb-3">Connection Status <span class="text-neutral-600">(click to
+                    disconnect)</span></p>
 
             <div class="space-y-2">
                 <div class="flex items-center">
                     <span class="w-3 h-3 rounded-full mr-2 bg-red-500" id="openai-connection"></span>
-                    <span class="text-sm text-neutral-400 connection-label" id="openai-connection-label" data-provider="openai">OpenAI</span>
+                    <span class="text-sm text-neutral-400 connection-label" id="openai-connection-label"
+                        data-provider="openai">OpenAI</span>
                 </div>
                 <div class="flex items-center">
                     <span class="w-3 h-3 rounded-full mr-2 bg-red-500" id="anthropic-connection"></span>
-                    <span class="text-sm text-neutral-400 connection-label" id="anthropic-connection-label" data-provider="anthropic">Anthropic</span>
+                    <span class="text-sm text-neutral-400 connection-label" id="anthropic-connection-label"
+                        data-provider="anthropic">Anthropic</span>
                 </div>
                 <div class="flex items-center">
                     <span class="w-3 h-3 rounded-full mr-2 bg-red-500" id="google-connection"></span>
-                    <span class="text-sm text-neutral-400 connection-label" id="google-connection-label" data-provider="google">Google</span>
+                    <span class="text-sm text-neutral-400 connection-label" id="google-connection-label"
+                        data-provider="google">Google</span>
                 </div>
             </div>
         </div>
@@ -268,22 +318,32 @@
                         <div class="flex items-center justify-between mt-2">
                             <div class="flex items-center gap-3">
                                 <!-- Settings Button -->
-                                <button type="button" id="settings-btn" class="text-gray-400 hover:text-white transition-colors" title="Settings">
+                                <button type="button" id="settings-btn"
+                                    class="text-gray-400 hover:text-white transition-colors" title="Settings">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                        </path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     </svg>
                                 </button>
                                 <!-- New Chat Button -->
-                                <button type="button" class="new-chat-btn text-gray-400 hover:text-white transition-colors" title="New Chat">
+                                <button type="button"
+                                    class="new-chat-btn text-gray-400 hover:text-white transition-colors"
+                                    title="New Chat">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                        </path>
                                     </svg>
                                 </button>
                             </div>
-                            <button type="submit" id="send-btn" class="bg-white text-black font-medium py-2 px-4 rounded-full hover:bg-gray-200 transition-colors flex items-center gap-2">
+                            <button type="submit" id="send-btn"
+                                class="bg-white text-black font-medium py-2 px-4 rounded-full hover:bg-gray-200 transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                                 </svg>
                             </button>
                         </div>
@@ -314,7 +374,8 @@
         <div id="error-container" class="hidden px-4">
             <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg max-w-4xl mx-auto">
                 <span id="error-message"></span>
-                <button onclick="document.getElementById('error-container').classList.add('hidden')" class="float-right text-red-200 hover:text-white">&times;</button>
+                <button onclick="document.getElementById('error-container').classList.add('hidden')"
+                    class="float-right text-red-200 hover:text-white">&times;</button>
             </div>
         </div>
 
@@ -328,22 +389,32 @@
                     <div class="flex items-center justify-between mt-2">
                         <div class="flex items-center gap-3">
                             <!-- Settings Button -->
-                            <button type="button" class="settings-btn-trigger text-gray-400 hover:text-white transition-colors" title="Settings">
+                            <button type="button"
+                                class="settings-btn-trigger text-gray-400 hover:text-white transition-colors"
+                                title="Settings">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                    </path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 </svg>
                             </button>
                             <!-- New Chat Button -->
-                            <button type="button" class="new-chat-btn text-gray-400 hover:text-white transition-colors" title="New Chat">
+                            <button type="button" class="new-chat-btn text-gray-400 hover:text-white transition-colors"
+                                title="New Chat">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                    </path>
                                 </svg>
                             </button>
                         </div>
-                        <button type="submit" id="send-btn-bottom" class="bg-white text-black font-medium py-2 px-4 rounded-full hover:bg-gray-200 transition-colors flex items-center gap-2">
+                        <button type="submit" id="send-btn-bottom"
+                            class="bg-white text-black font-medium py-2 px-4 rounded-full hover:bg-gray-200 transition-colors flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                             </svg>
                         </button>
                     </div>
@@ -353,6 +424,53 @@
     </div>
 </div>
 {% endblock %}
+
+
+<style>
+    @keyframes refresh-pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.2);
+            opacity: 0.8;
+            color: #4ade80;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes text-flash {
+        0% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        50% {
+            opacity: 0.5;
+            transform: translateY(-3px);
+            color: #4ade80;
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-refresh-icon {
+        animation: refresh-pulse 0.5s ease-in-out;
+    }
+
+    .animate-refresh-text {
+        animation: text-flash 0.6s ease-in-out;
+    }
+</style>
 
 {% block scripts %}
 <script>
@@ -547,7 +665,7 @@ Best opportunity: TICKER because [reason]`;
 
     // Handle clicking on connection labels to disconnect
     document.querySelectorAll('.connection-label').forEach(label => {
-        label.addEventListener('click', function() {
+        label.addEventListener('click', function () {
             const provider = this.dataset.provider;
 
             // Only act if there's a valid key
@@ -616,7 +734,7 @@ Best opportunity: TICKER because [reason]`;
         }
 
         // Save key on change and update status
-        input.addEventListener('input', function() {
+        input.addEventListener('input', function () {
             const labelEl = this.parentElement.querySelector('label');
 
             if (this.value) {
@@ -637,7 +755,7 @@ Best opportunity: TICKER because [reason]`;
         });
 
         // Handle Enter key to validate and save
-        input.addEventListener('keydown', async function(e) {
+        input.addEventListener('keydown', async function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 const key = this.value.trim();
@@ -724,7 +842,7 @@ Best opportunity: TICKER because [reason]`;
 
     // Save model selection when changed
     document.querySelectorAll('.model-select').forEach(select => {
-        select.addEventListener('change', function() {
+        select.addEventListener('change', function () {
             const provider = this.dataset.provider;
             const savedModels = JSON.parse(localStorage.getItem('selectedModels') || '{}');
             savedModels[provider] = this.value;
@@ -734,7 +852,7 @@ Best opportunity: TICKER because [reason]`;
 
     // Eye toggle for showing/hiding API keys
     document.querySelectorAll('.eye-toggle').forEach(button => {
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = this.dataset.target;
             const input = document.getElementById(targetId);
@@ -1214,12 +1332,12 @@ Best opportunity: TICKER because [reason]`;
     }
 
     // Attach submit handlers to both forms
-    chatForm.addEventListener('submit', async function(e) {
+    chatForm.addEventListener('submit', async function (e) {
         e.preventDefault();
         await handleChatSubmit(messageInput, sendBtn);
     });
 
-    chatFormBottom.addEventListener('submit', async function(e) {
+    chatFormBottom.addEventListener('submit', async function (e) {
         e.preventDefault();
         await handleChatSubmit(messageInputBottom, sendBtnBottom);
     });
@@ -1331,7 +1449,7 @@ Best opportunity: TICKER because [reason]`;
         // Pre-process: Normalize different LLM output formats to standard "STOCK N:" format
         // Handle "# STOCK ANALYSIS: TICKER" format (Claude)
         html = html.replace(/#{1,2}\s*STOCK\s*ANALYSIS[:\s]+([A-Z0-9]+)(?:\s*[-–—]\s*([A-Za-z0-9 ,.&']+))?/gi,
-            function(match, ticker, name, offset) {
+            function (match, ticker, name, offset) {
                 // Count how many stocks we've seen to assign a number
                 const precedingText = html.substring(0, offset);
                 const stockCount = (precedingText.match(/STOCK\s+\d+:/gi) || []).length + 1;
@@ -1341,7 +1459,7 @@ Best opportunity: TICKER because [reason]`;
         // Handle standalone "TICKER - Company Name" at start of response or after newlines (OpenAI)
         // Only match if followed by typical stock analysis content
         html = html.replace(/^([A-Z]{1,5})\s*[-–—]\s*([A-Z][A-Za-z0-9 ,.&']+(?:Inc\.?|Corp\.?|Company|Ltd\.?|LLC)?)\s*\n/gim,
-            function(match, ticker, name, offset) {
+            function (match, ticker, name, offset) {
                 // Check if this looks like a stock ticker (1-5 uppercase letters)
                 if (ticker.length >= 1 && ticker.length <= 5 && stockLogos[ticker]) {
                     const precedingText = html.substring(0, offset);
@@ -1420,7 +1538,7 @@ Best opportunity: TICKER because [reason]`;
 
         // Mark STOCK headers: "STOCK N: TICKER - NAME" or "STOCK N: TICKER"
         // Note: Company name can include letters, spaces, commas, periods, ampersands
-        html = html.replace(/STOCK\s+(\d+):\s*([A-Z0-9]+)(?:\s*[-–—]\s*([A-Za-z0-9 ,.&']+))?/gi, function(match, num, ticker, name) {
+        html = html.replace(/STOCK\s+(\d+):\s*([A-Z0-9]+)(?:\s*[-–—]\s*([A-Za-z0-9 ,.&']+))?/gi, function (match, num, ticker, name) {
             const cleanName = name ? name.trim() : '';
             const rating = stockRatings[num] || '';
             const score = stockScores[num] || '';
@@ -1499,7 +1617,7 @@ Best opportunity: TICKER because [reason]`;
         html = html.replace(/(<\/div>)\s*(<br>\s*)+(<div class="flex)/g, '$1$3');
 
         // Format Response Ratings items with provider names and scores - add spacing
-        html = html.replace(/-\s*\[([A-Z]+)\s*\(([^)]+)\)\]:\s*\[(\d+)\/10\]\s*-\s*([^\n<]+)/gi, function(match, provider, model, score, reason) {
+        html = html.replace(/-\s*\[([A-Z]+)\s*\(([^)]+)\)\]:\s*\[(\d+)\/10\]\s*-\s*([^\n<]+)/gi, function (match, provider, model, score, reason) {
             const scoreNum = parseInt(score);
             const scoreColor = scoreNum >= 8 ? 'text-green-400' : scoreNum >= 5 ? 'text-amber-400' : 'text-red-400';
             const bgColor = scoreNum >= 8 ? 'bg-green-500/20' : scoreNum >= 5 ? 'bg-amber-500/20' : 'bg-red-500/20';
@@ -1515,7 +1633,7 @@ Best opportunity: TICKER because [reason]`;
 
         // Format Portfolio Summary stock ratings with visual badges
         // Colors: Buy=green, Hold=yellow, Sell=red
-        html = html.replace(/•\s*([A-Z]+):\s*(Strong Buy|Buy|Hold|Sell|Strong Sell)\s*-\s*([^\n<]+)/gi, function(match, ticker, rating, reason) {
+        html = html.replace(/•\s*([A-Z]+):\s*(Strong Buy|Buy|Hold|Sell|Strong Sell)\s*-\s*([^\n<]+)/gi, function (match, ticker, rating, reason) {
             const ratingLower = rating.toLowerCase();
             let ratingColor, ratingBg;
             if (ratingLower.includes('strong buy')) { ratingColor = 'text-white'; ratingBg = 'bg-green-600'; }
@@ -1540,7 +1658,7 @@ Best opportunity: TICKER because [reason]`;
             '<div class="my-4 p-3 bg-gradient-to-r from-green-900/40 to-neutral-800/40 border border-green-500/30 rounded-lg"><span class="text-green-400 font-bold">🏆 Best Opportunity:</span> <span class="text-white font-bold">$1</span> <span class="text-neutral-300">— $2</span></div>');
 
         // Format Hallucination Check items (dash items after that section)
-        html = html.replace(/-\s*([^:\n]+)'s\s*([^\n<]+)/gi, function(match, provider, issue) {
+        html = html.replace(/-\s*([^:\n]+)'s\s*([^\n<]+)/gi, function (match, provider, issue) {
             // Only format if it looks like a hallucination check item
             if (issue.includes('incorrect') || issue.includes('outdated') || issue.includes('should')) {
                 return `<div class="my-2 p-2 bg-red-900/20 border-l-2 border-red-500 pl-3 rounded-r">
@@ -1589,7 +1707,11 @@ Best opportunity: TICKER because [reason]`;
 
     // Clear conversation / New Chat - attach to all new chat buttons
     document.querySelectorAll('.new-chat-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
+            // Add spinning animation to the clicked button's SVG immediately
+            const svg = this.querySelector('svg');
+            if (svg) svg.classList.add('animate-spin');
+
             fetch('/api/clear', {
                 method: 'POST',
                 headers: {
@@ -1598,19 +1720,60 @@ Best opportunity: TICKER because [reason]`;
             }).then(() => {
                 switchToWelcomeView();
                 messageInput.focus();
+
+                // remove spin
+                if (svg) svg.classList.remove('animate-spin');
+
+                // Visual Feedback on Welcome Screen Elements
+
+                // 1. Flash the icons (Settings and New Chat in welcome screen)
+                const welcomeSettingsBtn = document.getElementById('settings-btn');
+                const welcomeNewChatBtn = welcomeScreen.querySelector('.new-chat-btn');
+
+                if (welcomeSettingsBtn) {
+                    welcomeSettingsBtn.classList.remove('animate-refresh-icon');
+                    void welcomeSettingsBtn.offsetWidth; // Trigger reflow
+                    welcomeSettingsBtn.classList.add('animate-refresh-icon');
+                    setTimeout(() => welcomeSettingsBtn.classList.remove('animate-refresh-icon'), 500);
+                }
+
+                if (welcomeNewChatBtn) {
+                    welcomeNewChatBtn.classList.remove('animate-refresh-icon');
+                    void welcomeNewChatBtn.offsetWidth; // Trigger reflow
+                    welcomeNewChatBtn.classList.add('animate-refresh-icon');
+                    setTimeout(() => welcomeNewChatBtn.classList.remove('animate-refresh-icon'), 500);
+                }
+
+                // 2. Flash the "1 question. 1 uber answer." text
+                const welcomeH1 = welcomeScreen.querySelector('h1');
+                if (welcomeH1) {
+                    welcomeH1.classList.remove('animate-refresh-text');
+                    void welcomeH1.offsetWidth;
+                    welcomeH1.classList.add('animate-refresh-text');
+                    setTimeout(() => welcomeH1.classList.remove('animate-refresh-text'), 600);
+                }
+
+                // 3. Flash the "Ask anything" input area
+                const msgInput = document.getElementById('message-input');
+                if (msgInput) {
+                    msgInput.classList.remove('animate-refresh-text');
+                    void msgInput.offsetWidth;
+                    msgInput.classList.add('animate-refresh-text');
+                    setTimeout(() => msgInput.classList.remove('animate-refresh-text'), 600);
+                }
             });
         });
     });
 
     // Handle Enter key (Shift+Enter for new line) - for both inputs
-    messageInput.addEventListener('keydown', function(e) {
+    messageInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             chatForm.dispatchEvent(new Event('submit', { bubbles: true }));
         }
     });
 
-    messageInputBottom.addEventListener('keydown', function(e) {
+    messageInputBottom.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             chatFormBottom.dispatchEvent(new Event('submit', { bubbles: true }));
@@ -1633,7 +1796,7 @@ Best opportunity: TICKER because [reason]`;
         }
     }
 
-    sidebarToggle.addEventListener('click', function() {
+    sidebarToggle.addEventListener('click', function () {
         apiKeysExpanded = !apiKeysExpanded;
         localStorage.setItem('apiKeysExpanded', apiKeysExpanded);
         updateApiKeysVisibility();
@@ -1658,7 +1821,7 @@ Best opportunity: TICKER because [reason]`;
         }
     }
 
-    modelsToggle.addEventListener('click', function() {
+    modelsToggle.addEventListener('click', function () {
         modelsExpanded = !modelsExpanded;
         localStorage.setItem('modelsExpanded', modelsExpanded);
         updateModelsVisibility();
@@ -1686,7 +1849,7 @@ Best opportunity: TICKER because [reason]`;
         }
     }
 
-    aggregatorToggle.addEventListener('click', function() {
+    aggregatorToggle.addEventListener('click', function () {
         aggregatorExpanded = !aggregatorExpanded;
         localStorage.setItem('aggregatorExpanded', aggregatorExpanded);
         updateAggregatorVisibility();
@@ -1729,7 +1892,7 @@ Best opportunity: TICKER because [reason]`;
     updateUberAnswerToggleUI();
 
     // Toggle click handler
-    uberAnswerToggle.addEventListener('click', function() {
+    uberAnswerToggle.addEventListener('click', function () {
         aggregatorEnabled.checked = !aggregatorEnabled.checked;
         localStorage.setItem('aggregatorEnabled', aggregatorEnabled.checked);
         updateUberAnswerToggleUI();
@@ -1747,12 +1910,12 @@ Best opportunity: TICKER because [reason]`;
         }
     }
 
-    aggregatorProvider.addEventListener('change', function() {
+    aggregatorProvider.addEventListener('change', function () {
         localStorage.setItem('aggregatorProvider', this.value);
         updateAggregatorModels();
     });
 
-    aggregatorModel.addEventListener('change', function() {
+    aggregatorModel.addEventListener('change', function () {
         localStorage.setItem('aggregatorModel', this.value);
     });
 
@@ -1843,7 +2006,7 @@ Best opportunity: TICKER because [reason]`;
     }
 
     // Handle clicks on response frames (event delegation)
-    chatMessages.addEventListener('click', function(e) {
+    chatMessages.addEventListener('click', function (e) {
         // Handle "View Original" toggle click
         const viewOriginalToggle = e.target.closest('.view-original-toggle');
         if (viewOriginalToggle) {
@@ -1879,7 +2042,7 @@ Best opportunity: TICKER because [reason]`;
     });
 
     // Handle double-click on response headers
-    chatMessages.addEventListener('dblclick', function(e) {
+    chatMessages.addEventListener('dblclick', function (e) {
         // Double-click on LLM response header
         const responseHeader = e.target.closest('.response-header');
         if (responseHeader) {
@@ -1917,7 +2080,7 @@ Best opportunity: TICKER because [reason]`;
         }
     }
 
-    financialModeToggle.addEventListener('click', function() {
+    financialModeToggle.addEventListener('click', function () {
         financialModeEnabled = !financialModeEnabled;
         localStorage.setItem('financialModeEnabled', financialModeEnabled);
         updateFinancialModeUI();
@@ -1946,7 +2109,7 @@ Best opportunity: TICKER because [reason]`;
         }
     }
 
-    debatedModeToggle.addEventListener('click', function() {
+    debatedModeToggle.addEventListener('click', function () {
         debatedModeEnabled = !debatedModeEnabled;
         localStorage.setItem('debatedModeEnabled', debatedModeEnabled);
         updateDebatedModeUI();
@@ -1957,7 +2120,7 @@ Best opportunity: TICKER because [reason]`;
 
     // Remember API Keys checkbox handler
     if (rememberApiKeysCheckbox) {
-        rememberApiKeysCheckbox.addEventListener('change', function() {
+        rememberApiKeysCheckbox.addEventListener('change', function () {
             if (this.checked) {
                 localStorage.setItem('rememberApiKeys', 'true');
                 localStorage.setItem('apiKeys', JSON.stringify(apiKeys));

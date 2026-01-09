@@ -1,6 +1,7 @@
 """Chat API routes."""
 
 import asyncio
+import json
 import logging
 import time
 import uuid
@@ -478,8 +479,6 @@ async def aggregate_responses(
     Returns:
         Dictionary with the aggregated response.
     """
-    import json
-
     try:
         responses_data = json.loads(responses_json)
     except json.JSONDecodeError as e:
@@ -489,11 +488,10 @@ async def aggregate_responses(
         raise HTTPException(status_code=400, detail="Invalid aggregator provider")
 
     # Build the prompt for the aggregator
-    responses_text = ""
-    for resp in responses_data:
-        responses_text += (
-            f"\n### {resp['provider'].upper()} ({resp['model']}):\n{resp['response']}\n"
-        )
+    responses_text = "\n".join(
+        f"\n### {resp['provider'].upper()} ({resp['model']}):\n{resp['response']}"
+        for resp in responses_data
+    )
 
     aggregator_prompt = (
         f"User's Question: {user_question}\n\n"
@@ -545,8 +543,6 @@ async def debate_round(
     Raises:
         HTTPException: If fewer than 2 providers or invalid JSON.
     """
-    import json
-
     try:
         initial_responses = json.loads(responses_json)
     except json.JSONDecodeError as e:

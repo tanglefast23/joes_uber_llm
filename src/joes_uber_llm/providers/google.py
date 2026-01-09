@@ -3,7 +3,7 @@
 import logging
 
 from google import genai
-from google.genai import types
+from google.genai import errors, types
 
 from joes_uber_llm.config import PROVIDER_MODELS
 from joes_uber_llm.providers.base import BaseProvider, Message
@@ -88,6 +88,6 @@ class GoogleProvider(BaseProvider):
             if response.text:
                 return response.text
             raise RuntimeError("Google Gemini returned empty response")
-        except Exception as e:
+        except errors.APIError as e:
             logger.error("Google API error: %s", e)
             raise RuntimeError(f"Google API error: {e}") from e

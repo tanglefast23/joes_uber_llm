@@ -767,11 +767,13 @@ Best opportunity: TICKER because [reason]`;
         return `
             <div class="bg-neutral-800 border border-neutral-700 rounded-lg overflow-hidden llm-response-frame" data-provider="${provider}">
                 <div class="response-header flex items-center justify-between px-4 py-2 border-b border-neutral-700 bg-neutral-800 cursor-pointer">
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-1 min-w-0">
                         ${providerIcons[provider]}
                         <span class="text-xs text-neutral-400">${model}</span>
+                        <span class="revised-badge hidden text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded">Revised</span>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <span class="view-original-toggle hidden text-xs text-purple-400 hover:text-purple-300 cursor-pointer">View Original</span>
                         <div class="loading-spinner">
                             <svg class="w-4 h-4 animate-spin text-neutral-400" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -780,11 +782,11 @@ Best opportunity: TICKER because [reason]`;
                         </div>
                         <div class="response-toggle-icons hidden flex items-center gap-1">
                             <button type="button" class="response-arrow-toggle ${providerColor} hover:text-white transition-colors">
-                                <svg class="w-4 h-4 arrow-down" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                <svg class="w-4 h-4 arrow-right" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                <svg class="w-4 h-4 arrow-up hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                <svg class="w-4 h-4 arrow-down hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                             <button type="button" class="response-eye-toggle ${providerColor} hover:text-white transition-colors">
@@ -1070,7 +1072,7 @@ Best opportunity: TICKER because [reason]`;
                                 </div>
                             `;
 
-                            // Update each response frame with revised answer and "View Original" toggle
+                            // Update each response frame with revised answer and show "View Original" toggle
                             debateResult.responses.forEach(r => {
                                 const frame = responsesContainer.querySelector(`[data-provider="${r.provider}"]`);
                                 if (frame) {
@@ -1086,38 +1088,11 @@ Best opportunity: TICKER because [reason]`;
                                         responseTextEl.dataset.formatted = '';
                                     }
 
-                                    // Add "View Original" toggle to header if not already present
-                                    const header = frame.querySelector('.response-header');
-                                    if (header && !header.querySelector('.view-original-toggle')) {
-                                        const toggleBtn = document.createElement('button');
-                                        toggleBtn.className = 'view-original-toggle text-xs text-purple-400 hover:text-purple-300 ml-2';
-                                        toggleBtn.textContent = 'View Original';
-                                        toggleBtn.onclick = function(e) {
-                                            e.stopPropagation();
-                                            const content = frame.querySelector('.response-content');
-                                            const textEl = frame.querySelector('.response-text');
-                                            const isShowingOriginal = toggleBtn.dataset.showingOriginal === 'true';
-
-                                            if (isShowingOriginal) {
-                                                textEl.innerHTML = formatMarkdown(frame.dataset.response);
-                                                toggleBtn.textContent = 'View Original';
-                                                toggleBtn.dataset.showingOriginal = 'false';
-                                            } else {
-                                                textEl.innerHTML = formatMarkdown(frame.dataset.originalResponse);
-                                                toggleBtn.textContent = 'View Revised';
-                                                toggleBtn.dataset.showingOriginal = 'true';
-                                            }
-                                            content.classList.remove('hidden');
-                                        };
-                                        header.appendChild(toggleBtn);
-
-                                        // Add revised badge
-                                        const badge = document.createElement('span');
-                                        badge.className = 'text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded ml-2';
-                                        badge.textContent = 'Revised';
-                                        const modelSpan = header.querySelector('.text-neutral-400');
-                                        if (modelSpan) modelSpan.after(badge);
-                                    }
+                                    // Show the pre-built revised badge and view original toggle
+                                    const revisedBadge = frame.querySelector('.revised-badge');
+                                    const viewOriginalToggle = frame.querySelector('.view-original-toggle');
+                                    if (revisedBadge) revisedBadge.classList.remove('hidden');
+                                    if (viewOriginalToggle) viewOriginalToggle.classList.remove('hidden');
                                 }
                             });
                         } else {
@@ -1786,8 +1761,8 @@ Best opportunity: TICKER because [reason]`;
         const responseTextEl = frame.querySelector('.response-text');
         const arrowToggle = frame.querySelector('.response-arrow-toggle');
         const eyeToggle = frame.querySelector('.response-eye-toggle');
+        const arrowRight = arrowToggle?.querySelector('.arrow-right');
         const arrowDown = arrowToggle?.querySelector('.arrow-down');
-        const arrowUp = arrowToggle?.querySelector('.arrow-up');
         const eyeClosed = eyeToggle?.querySelector('.eye-closed');
         const eyeOpen = eyeToggle?.querySelector('.eye-open');
         const provider = frame.dataset.provider;
@@ -1800,9 +1775,9 @@ Best opportunity: TICKER because [reason]`;
                 responseTextEl.dataset.formatted = 'true';
             }
             content.classList.remove('hidden');
-            // Update icons
-            if (arrowDown) arrowDown.classList.add('hidden');
-            if (arrowUp) arrowUp.classList.remove('hidden');
+            // Update icons: right arrow -> down arrow (expanded)
+            if (arrowRight) arrowRight.classList.add('hidden');
+            if (arrowDown) arrowDown.classList.remove('hidden');
             if (eyeClosed) eyeClosed.classList.add('hidden');
             if (eyeOpen) eyeOpen.classList.remove('hidden');
             // Remove color (expanded state)
@@ -1811,9 +1786,9 @@ Best opportunity: TICKER because [reason]`;
             // Don't scroll - keep user's current position
         } else {
             content.classList.add('hidden');
-            // Update icons
-            if (arrowDown) arrowDown.classList.remove('hidden');
-            if (arrowUp) arrowUp.classList.add('hidden');
+            // Update icons: down arrow -> right arrow (collapsed)
+            if (arrowRight) arrowRight.classList.remove('hidden');
+            if (arrowDown) arrowDown.classList.add('hidden');
             if (eyeClosed) eyeClosed.classList.remove('hidden');
             if (eyeOpen) eyeOpen.classList.add('hidden');
             // Restore color (collapsed state)
@@ -1824,6 +1799,30 @@ Best opportunity: TICKER because [reason]`;
 
     // Handle clicks on response frames (event delegation)
     chatMessages.addEventListener('click', function(e) {
+        // Handle "View Original" toggle click
+        const viewOriginalToggle = e.target.closest('.view-original-toggle');
+        if (viewOriginalToggle) {
+            e.stopPropagation();
+            const frame = viewOriginalToggle.closest('.llm-response-frame');
+            if (frame && frame.dataset.isRevised === 'true') {
+                const content = frame.querySelector('.response-content');
+                const textEl = frame.querySelector('.response-text');
+                const isShowingOriginal = viewOriginalToggle.dataset.showingOriginal === 'true';
+
+                if (isShowingOriginal) {
+                    textEl.innerHTML = formatMarkdown(frame.dataset.response);
+                    viewOriginalToggle.textContent = 'View Original';
+                    viewOriginalToggle.dataset.showingOriginal = 'false';
+                } else {
+                    textEl.innerHTML = formatMarkdown(frame.dataset.originalResponse);
+                    viewOriginalToggle.textContent = 'View Revised';
+                    viewOriginalToggle.dataset.showingOriginal = 'true';
+                }
+                content.classList.remove('hidden');
+            }
+            return;
+        }
+
         // Handle LLM response frame arrow or eye toggle
         const responseArrowBtn = e.target.closest('.response-arrow-toggle');
         const responseEyeBtn = e.target.closest('.response-eye-toggle');

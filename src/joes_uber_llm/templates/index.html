@@ -1383,9 +1383,9 @@ Best opportunity: TICKER because [reason]`;
             const verdictSection = verdictMatch ? verdictMatch[0] : section;
 
             const scorePatterns = [
-                /Investment\s*Score[:\s]*\*{0,2}(\d+)\s*\/\s*10\*{0,2}/i,
-                /(?:Score)[:\s]*\*{0,2}(\d+)\s*\/\s*10\*{0,2}/i,
-                /\*{0,2}(\d+)\/10\*{0,2}/i
+                /Investment\s*Score[:\s]*\*{0,2}(\d+(?:\.\d+)?)\s*\/\s*10\*{0,2}/i,
+                /(?:Score)[:\s]*\*{0,2}(\d+(?:\.\d+)?)\s*\/\s*10\*{0,2}/i,
+                /\*{0,2}(\d+(?:\.\d+)?)\/10\*{0,2}/i
             ];
             for (const pattern of scorePatterns) {
                 const match = verdictSection.match(pattern);

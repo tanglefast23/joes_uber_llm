@@ -155,30 +155,26 @@
         </div>
 
         <!-- LLM Master Aggregator Section -->
-        <button id="aggregator-toggle" class="flex items-center gap-3 p-4 hover:bg-neutral-800 transition-colors border-t border-neutral-800">
-            <div class="w-6 h-6 flex items-center justify-center rounded bg-neutral-800 hover:bg-neutral-700 transition-colors">
-                <svg id="aggregator-toggle-icon" class="w-4 h-4 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-            </div>
-            <span class="text-lg font-semibold text-neutral-300 whitespace-nowrap">Uber Answer</span>
-        </button>
+        <div class="flex items-center justify-between p-4 border-t border-neutral-800">
+            <button id="aggregator-toggle" class="flex items-center gap-3 hover:bg-neutral-800 transition-colors">
+                <div class="w-6 h-6 flex items-center justify-center rounded bg-neutral-800 hover:bg-neutral-700 transition-colors">
+                    <svg id="aggregator-toggle-icon" class="w-4 h-4 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <span class="text-lg font-semibold text-neutral-300 whitespace-nowrap">Uber Answer</span>
+            </button>
+            <button type="button" id="uber-answer-toggle" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-green-600" role="switch" aria-checked="true">
+                <span class="sr-only">Enable Uber Answer</span>
+                <span id="uber-answer-knob" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6"></span>
+            </button>
+            <input type="checkbox" id="aggregator-enabled" class="hidden" checked>
+        </div>
 
         <!-- Aggregator Content -->
         <div id="aggregator-content">
             <div class="p-4 flex flex-col">
                 <p class="text-xs text-neutral-500 mb-3">Select which LLM will aggregate and synthesize all responses into one superior answer</p>
-
-                <div class="mb-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-neutral-300">Enable Uber Answer</span>
-                        <button type="button" id="uber-answer-toggle" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-green-600" role="switch" aria-checked="true">
-                            <span class="sr-only">Enable Uber Answer</span>
-                            <span id="uber-answer-knob" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6"></span>
-                        </button>
-                        <input type="checkbox" id="aggregator-enabled" class="hidden" checked>
-                    </div>
-                </div>
 
                 <div class="mb-3">
                     <label class="block text-sm font-medium text-neutral-400 mb-1">Aggregator LLM</label>

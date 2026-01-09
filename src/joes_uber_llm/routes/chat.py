@@ -5,6 +5,7 @@ import logging
 import time
 import uuid
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Form, Header, HTTPException, Request
@@ -18,7 +19,8 @@ from joes_uber_llm.providers.base import BaseProvider, Message
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api")
-templates = Jinja2Templates(directory="src/joes_uber_llm/templates")
+TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 # In-memory conversation storage (keyed by session_id, then by provider)
 # Structure: {session_id: {provider: [Message, ...]}}

@@ -4,12 +4,16 @@
 <div class="relative h-screen">
     <!-- Left Sidebar - Settings (overlay) -->
     <div id="sidebar"
-        class="absolute left-0 top-0 h-full z-50 bg-neutral-900 flex flex-col border-r border-neutral-800 transition-transform duration-300 w-80 overflow-y-auto shadow-2xl -translate-x-full">
+        class="absolute left-0 top-0 h-full z-50 flex flex-col transition-transform duration-300 w-96 overflow-y-auto shadow-2xl -translate-x-full"
+        style="background: var(--bg-card); border-right: 1px solid var(--border-subtle);">
         <!-- Sidebar Header -->
-        <div class="flex items-center justify-between p-4">
-            <span class="text-lg font-semibold text-neutral-200">Settings</span>
+        <div class="flex items-center justify-between p-5">
+            <span class="font-display text-xl font-bold" style="color: var(--text-primary);">Settings</span>
             <button id="sidebar-close-btn"
-                class="text-neutral-500 hover:text-white transition-colors p-1 rounded hover:bg-neutral-800"
+                class="btn-playful p-2 rounded-lg transition-colors"
+                style="color: var(--text-muted);"
+                onmouseover="this.style.color='var(--coral)'"
+                onmouseout="this.style.color='var(--text-muted)'"
                 title="Close sidebar">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -17,164 +21,211 @@
             </button>
         </div>
 
-        <!-- Mode Selection - Compact Pills -->
-        <div class="px-4 pb-4">
-            <div class="flex flex-wrap gap-2">
+        <!-- Mode Selection - Colorful Pills -->
+        <div class="px-5 pb-5">
+            <div class="flex gap-2">
                 <button type="button" id="uber-answer-toggle"
-                    class="mode-pill px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                    data-active="true">
-                    ✦ Synthesize
+                    class="mode-pill mode-pill-new pill-synthesize active px-3 py-1.5 rounded-full text-xs font-semibold"
+                    data-active="true"
+                    title="Query all LLMs and synthesize into one unified answer">
+                    ✦ Synth
                 </button>
                 <button type="button" id="debated-mode-toggle"
-                    class="mode-pill px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-neutral-800 text-neutral-400 border border-neutral-700 hover:border-neutral-600"
-                    data-active="false">
+                    class="mode-pill mode-pill-new pill-debate px-3 py-1.5 rounded-full text-xs font-semibold"
+                    data-active="false"
+                    title="LLMs debate each other to explore different perspectives">
                     ⚔ Debate
                 </button>
                 <button type="button" id="financial-mode-toggle"
-                    class="mode-pill px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-neutral-800 text-neutral-400 border border-neutral-700 hover:border-neutral-600"
-                    data-active="false">
+                    class="mode-pill mode-pill-new pill-finance px-3 py-1.5 rounded-full text-xs font-semibold"
+                    data-active="false"
+                    title="Analyze stocks with financial metrics and comparisons">
                     $ Finance
                 </button>
             </div>
-            <input type="checkbox" id="aggregator-enabled" class="hidden" checked>
         </div>
 
         <!-- Providers Section - Combined Keys + Models -->
         <div id="sidebar-content" class="flex-1 overflow-y-auto">
-            <div class="px-4 pb-2">
-                <p class="text-xs text-neutral-500 mb-3">API keys stored locally in browser</p>
+            <div class="px-5 pb-2">
+                <p class="text-xs mb-4" style="color: var(--text-muted);">API keys stored locally in browser</p>
 
                 <!-- OpenAI -->
-                <div class="mb-4 provider-row" data-provider="openai">
+                <div class="mb-4 provider-row p-3 rounded-xl transition-all hover:scale-[1.01]" data-provider="openai"
+                    style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="flex items-center text-sm font-medium text-neutral-300">
-                            <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="openai-status"></span>
-                            <span class="w-3 h-3 rounded-full mr-2 bg-red-500" id="openai-connection"></span>
+                        <span class="flex items-center text-sm font-semibold" style="color: #10a37f;">
+                            <button id="openai-disconnect" data-provider="openai"
+                                class="disconnect-btn hidden text-red-400 hover:text-red-300 mr-1.5 transition-all"
+                                title="Disconnect">✕</button>
+                            <span class="w-2.5 h-2.5 rounded-full mr-2 bg-red-500" id="openai-connection"></span>
                             OpenAI
                         </span>
-                        <select id="openai-model" data-provider="openai"
-                            class="model-select bg-neutral-800 border-0 rounded px-2 py-1 text-neutral-400 text-xs focus:ring-0 cursor-pointer">
-                            {% for m in provider_models['openai'] %}
-                            <option value="{{ m }}">{{ m }}</option>
-                            {% endfor %}
-                        </select>
+                        <div class="flex items-center gap-2">
+                            <select id="openai-model" data-provider="openai"
+                                class="font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
+                                style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                                {% for m in provider_models['openai'] %}
+                                <option value="{{ m }}">{{ (m | replace('-', ' ')).split()[:3] | join(' ') | title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
                     <input type="password" id="openai-key" placeholder="sk-..." data-provider="openai"
-                        class="api-key-input w-full bg-neutral-800/50 border-0 rounded px-3 py-2 text-white text-sm placeholder-neutral-600 focus:ring-1 focus:ring-neutral-600">
+                        class="api-key-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none transition-all"
+                        style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle);">
                 </div>
 
                 <!-- Anthropic -->
-                <div class="mb-4 provider-row" data-provider="anthropic">
+                <div class="mb-4 provider-row p-3 rounded-xl transition-all hover:scale-[1.01]" data-provider="anthropic"
+                    style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="flex items-center text-sm font-medium text-neutral-300">
-                            <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="anthropic-status"></span>
-                            <span class="w-3 h-3 rounded-full mr-2 bg-red-500" id="anthropic-connection"></span>
+                        <span class="flex items-center text-sm font-semibold" style="color: #d4a27f;">
+                            <button id="anthropic-disconnect" data-provider="anthropic"
+                                class="disconnect-btn hidden text-red-400 hover:text-red-300 mr-1.5 transition-all"
+                                title="Disconnect">✕</button>
+                            <span class="w-2.5 h-2.5 rounded-full mr-2 bg-red-500" id="anthropic-connection"></span>
                             Anthropic
                         </span>
-                        <select id="anthropic-model" data-provider="anthropic"
-                            class="model-select bg-neutral-800 border-0 rounded px-2 py-1 text-neutral-400 text-xs focus:ring-0 cursor-pointer">
-                            {% for m in provider_models['anthropic'] %}
-                            <option value="{{ m }}">{{ m }}</option>
-                            {% endfor %}
-                        </select>
+                        <div class="flex items-center gap-2">
+                            <select id="anthropic-model" data-provider="anthropic"
+                                class="font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
+                                style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                                {% for m in provider_models['anthropic'] %}
+                                <option value="{{ m }}">{{ (m | replace('-', ' ')).split()[:3] | join(' ') | title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
                     <input type="password" id="anthropic-key" placeholder="sk-ant-..." data-provider="anthropic"
-                        class="api-key-input w-full bg-neutral-800/50 border-0 rounded px-3 py-2 text-white text-sm placeholder-neutral-600 focus:ring-1 focus:ring-neutral-600">
+                        class="api-key-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none transition-all"
+                        style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle);">
                 </div>
 
                 <!-- Google -->
-                <div class="mb-4 provider-row" data-provider="google">
+                <div class="mb-4 provider-row p-3 rounded-xl transition-all hover:scale-[1.01]" data-provider="google"
+                    style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="flex items-center text-sm font-medium text-neutral-300">
-                            <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="google-status"></span>
-                            <span class="w-3 h-3 rounded-full mr-2 bg-red-500" id="google-connection"></span>
+                        <span class="flex items-center text-sm font-semibold" style="color: #4285f4;">
+                            <button id="google-disconnect" data-provider="google"
+                                class="disconnect-btn hidden text-red-400 hover:text-red-300 mr-1.5 transition-all"
+                                title="Disconnect">✕</button>
+                            <span class="w-2.5 h-2.5 rounded-full mr-2 bg-red-500" id="google-connection"></span>
                             Google
                         </span>
-                        <select id="google-model" data-provider="google"
-                            class="model-select bg-neutral-800 border-0 rounded px-2 py-1 text-neutral-400 text-xs focus:ring-0 cursor-pointer">
-                            {% for m in provider_models['google'] %}
-                            <option value="{{ m }}">{{ m }}</option>
-                            {% endfor %}
-                        </select>
+                        <div class="flex items-center gap-2">
+                            <select id="google-model" data-provider="google"
+                                class="font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
+                                style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                                {% for m in provider_models['google'] %}
+                                <option value="{{ m }}">{{ (m | replace('-', ' ')).split()[:3] | join(' ') | title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
                     <input type="password" id="google-key" placeholder="AIza..." data-provider="google"
-                        class="api-key-input w-full bg-neutral-800/50 border-0 rounded px-3 py-2 text-white text-sm placeholder-neutral-600 focus:ring-1 focus:ring-neutral-600">
+                        class="api-key-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none transition-all"
+                        style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle);">
                 </div>
 
                 <!-- Grok -->
-                <div class="mb-4 provider-row" data-provider="grok">
+                <div class="mb-4 provider-row p-3 rounded-xl transition-all hover:scale-[1.01]" data-provider="grok"
+                    style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="flex items-center text-sm font-medium text-neutral-300">
-                            <span class="w-2 h-2 rounded-full mr-2 bg-neutral-600" id="grok-status"></span>
-                            <span class="w-3 h-3 rounded-full mr-2 bg-red-500" id="grok-connection"></span>
+                        <span class="flex items-center text-sm font-semibold" style="color: #f97316;">
+                            <button id="grok-disconnect" data-provider="grok"
+                                class="disconnect-btn hidden text-red-400 hover:text-red-300 mr-1.5 transition-all"
+                                title="Disconnect">✕</button>
+                            <span class="w-2.5 h-2.5 rounded-full mr-2 bg-red-500" id="grok-connection"></span>
                             Grok
                         </span>
-                        <select id="grok-model" data-provider="grok"
-                            class="model-select bg-neutral-800 border-0 rounded px-2 py-1 text-neutral-400 text-xs focus:ring-0 cursor-pointer">
-                            {% for m in provider_models['grok'] %}
-                            <option value="{{ m }}">{{ m }}</option>
-                            {% endfor %}
-                        </select>
+                        <div class="flex items-center gap-2">
+                            <select id="grok-model" data-provider="grok"
+                                class="font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
+                                style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                                {% for m in provider_models['grok'] %}
+                                <option value="{{ m }}">{{ (m | replace('-', ' ')).split()[:3] | join(' ') | title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
                     <input type="password" id="grok-key" placeholder="xai-..." data-provider="grok"
-                        class="api-key-input w-full bg-neutral-800/50 border-0 rounded px-3 py-2 text-white text-sm placeholder-neutral-600 focus:ring-1 focus:ring-neutral-600">
+                        class="api-key-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none transition-all"
+                        style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle);">
+                </div>
+
+                <!-- Synthesizer Model -->
+                <div class="mb-4 provider-row p-3 rounded-xl transition-all hover:scale-[1.01]" data-provider="synthesizer"
+                    style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="flex items-center text-sm font-semibold" style="color: #a855f7;">
+                            <span class="w-2.5 h-2.5 rounded-full mr-2 bg-purple-500"></span>
+                            Synthesizer
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <select id="aggregator-provider"
+                                class="font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
+                                style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                                <option value="openai">OpenAI</option>
+                                <option value="anthropic" selected>Anthropic</option>
+                                <option value="google">Google</option>
+                                <option value="grok">Grok</option>
+                            </select>
+                        </div>
+                    </div>
+                    <select id="aggregator-model"
+                        class="w-full font-mono text-xs px-3 py-2 rounded-lg cursor-pointer focus:outline-none"
+                        style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                        {% for m in provider_models['anthropic'] %}
+                        <option value="{{ m }}">{{ (m | replace('-', ' ')).split()[:3] | join(' ') | title }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <!-- Remember Keys -->
-                <label class="flex items-center text-xs text-neutral-500 cursor-pointer mt-2">
+                <label class="flex items-center text-xs cursor-pointer mt-3 px-1" style="color: var(--text-muted);">
                     <input type="checkbox" id="remember-api-keys"
-                        class="w-3 h-3 rounded bg-neutral-700 border-neutral-600 text-emerald-500 focus:ring-0 mr-2">
+                        class="w-3 h-3 rounded mr-2" style="accent-color: var(--lime);">
                     Remember keys
                 </label>
             </div>
         </div>
 
-        <!-- Aggregator Settings (collapsible) -->
-        <div id="aggregator-content" class="border-t border-neutral-800">
-            <button id="aggregator-toggle" class="w-full flex items-center justify-between p-4 text-left hover:bg-neutral-800/50 transition-colors">
-                <span class="text-sm font-medium text-neutral-400">Synthesizer Model</span>
-                <svg id="aggregator-toggle-icon" class="w-4 h-4 text-neutral-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-            </button>
-            <div id="aggregator-settings" class="px-4 pb-4 hidden">
-                <div class="flex gap-2">
-                    <select id="aggregator-provider"
-                        class="flex-1 bg-neutral-800 border-0 rounded px-2 py-1.5 text-neutral-300 text-xs focus:ring-0">
-                        <option value="openai">OpenAI</option>
-                        <option value="anthropic" selected>Anthropic</option>
-                        <option value="google">Google</option>
-                        <option value="grok">Grok</option>
-                    </select>
-                    <select id="aggregator-model"
-                        class="flex-1 bg-neutral-800 border-0 rounded px-2 py-1.5 text-neutral-300 text-xs focus:ring-0">
-                        {% for m in provider_models['anthropic'] %}
-                        <option value="{{ m }}">{{ m }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-        </div>
+        <!-- Hidden aggregator checkbox -->
+        <input type="checkbox" id="aggregator-enabled" class="hidden" checked>
 
     </div>
 
     <!-- Main Chat Area (full width, fixed position) -->
-    <div class="w-full h-full flex flex-col bg-neutral-900">
+    <div class="w-full h-full flex flex-col relative z-10">
         <!-- Welcome Screen with Centered Input -->
-        <div id="welcome-screen" class="flex-1 flex flex-col items-center justify-center">
-            <h1 class="text-3xl font-semibold text-white mb-8">1 question. 1 uber answer.</h1>
-            <!-- Centered Chat Input -->
-            <div class="w-full max-w-2xl px-4">
+        <div id="welcome-screen" class="flex-1 flex flex-col items-center justify-center ml-[250px]">
+            <div class="-translate-y-[100px]">
+                <!-- Dramatic Hero Headline -->
+                <div class="text-center mb-12 animate-fade-up">
+                    <h1 class="font-display text-6xl md:text-7xl font-extrabold tracking-tight leading-none">
+                        <span class="block" style="color: var(--text-primary);">1 question.</span>
+                        <span class="block gradient-text mt-2">1 uber answer.</span>
+                    </h1>
+                </div>
+
+                <!-- Centered Chat Input -->
+                <div class="w-full max-w-2xl px-4 animate-fade-up delay-200">
                 <form id="chat-form" class="w-full">
-                    <div class="bg-neutral-800 rounded-2xl px-4 py-3 border border-neutral-700">
-                        <textarea name="message" id="message-input" rows="1" placeholder="Ask anything"
-                            class="w-full bg-transparent text-white placeholder-gray-500 focus:outline-none resize-none text-base"
+                    <div class="input-glow rounded-2xl px-5 py-4" style="background: var(--bg-card);">
+                        <textarea name="message" id="message-input" rows="3" placeholder="Ask anything..."
+                            class="w-full bg-transparent focus:outline-none resize-none text-lg"
+                            style="color: var(--text-primary);"
                             required></textarea>
-                        <div class="flex items-center justify-between mt-2">
-                            <div class="flex items-center gap-3">
+                        <div class="flex items-center justify-between mt-3 pt-3" style="border-top: 1px solid var(--border-subtle);">
+                            <div class="flex items-center gap-4">
                                 <!-- Settings Button -->
                                 <button type="button" id="settings-btn"
-                                    class="text-gray-400 hover:text-white transition-colors" title="Settings">
+                                    class="btn-playful p-2 rounded-lg transition-colors"
+                                    style="color: var(--text-muted);"
+                                    onmouseover="this.style.color='var(--coral)';this.style.background='var(--coral-glow)'"
+                                    onmouseout="this.style.color='var(--text-muted)';this.style.background='transparent'"
+                                    title="Settings">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
@@ -185,7 +236,10 @@
                                 </button>
                                 <!-- New Chat Button -->
                                 <button type="button"
-                                    class="new-chat-btn text-gray-400 hover:text-white transition-colors"
+                                    class="new-chat-btn btn-playful p-2 rounded-lg transition-colors"
+                                    style="color: var(--text-muted);"
+                                    onmouseover="this.style.color='var(--violet)';this.style.background='var(--violet-glow)'"
+                                    onmouseout="this.style.color='var(--text-muted)';this.style.background='transparent'"
                                     title="New Chat">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -195,7 +249,9 @@
                                 </button>
                             </div>
                             <button type="submit" id="send-btn"
-                                class="bg-white text-black font-medium py-2 px-4 rounded-full hover:bg-gray-200 transition-colors flex items-center gap-2">
+                                class="btn-playful font-semibold py-2.5 px-6 rounded-full flex items-center gap-2 text-sm"
+                                style="background: linear-gradient(135deg, var(--coral) 0%, var(--violet) 100%); color: white;">
+                                <span>Send</span>
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -204,6 +260,7 @@
                         </div>
                     </div>
                 </form>
+            </div>
             </div>
         </div>
 
@@ -238,7 +295,7 @@
         <div id="bottom-input" class="hidden p-4">
             <form id="chat-form-bottom" class="max-w-2xl mx-auto">
                 <div class="bg-neutral-800 rounded-2xl px-4 py-3 border border-neutral-700">
-                    <textarea name="message" id="message-input-bottom" rows="1" placeholder="Ask anything"
+                    <textarea name="message" id="message-input-bottom" rows="4" placeholder="Ask anything"
                         class="w-full bg-transparent text-white placeholder-gray-500 focus:outline-none resize-none text-base"
                         required></textarea>
                     <div class="flex items-center justify-between mt-2">
@@ -275,6 +332,68 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Thinking God Character (appears during processing) -->
+    <div id="thinking-god" class="fixed right-12 top-1/2 -translate-y-1/2 z-[100] hidden opacity-0 transition-all duration-500 scale-150">
+        <div class="thinking-god-container relative p-6 rounded-3xl" style="background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%)">
+            <!-- Thought bubbles -->
+            <div class="thought-bubbles absolute -top-16 -left-8">
+                <div class="thought-bubble w-3 h-3 rounded-full bg-purple-400/60 absolute animate-float-bubble" style="animation-delay: 0s; left: 0; bottom: 0;"></div>
+                <div class="thought-bubble w-4 h-4 rounded-full bg-violet-400/50 absolute animate-float-bubble" style="animation-delay: 0.3s; left: 10px; bottom: 12px;"></div>
+                <div class="thought-bubble w-5 h-5 rounded-full bg-indigo-400/40 absolute animate-float-bubble" style="animation-delay: 0.6s; left: 5px; bottom: 28px;"></div>
+            </div>
+
+            <!-- God figure -->
+            <div class="god-figure animate-float-god text-center">
+                <!-- Halo -->
+                <div class="halo w-24 h-6 mx-auto -mb-2 rounded-full bg-gradient-to-r from-amber-300/30 via-yellow-200/50 to-amber-300/30 blur-sm animate-pulse-slow"></div>
+
+                <!-- Head with beard -->
+                <div class="head relative mx-auto w-16 h-16">
+                    <!-- Face -->
+                    <div class="face w-12 h-12 mx-auto rounded-full bg-gradient-to-b from-amber-100 to-amber-200 relative">
+                        <!-- Eyes (closed, thinking) -->
+                        <div class="eyes absolute top-4 left-2 right-2 flex justify-between px-1">
+                            <div class="eye w-2 h-0.5 bg-neutral-600 rounded-full transform -rotate-6"></div>
+                            <div class="eye w-2 h-0.5 bg-neutral-600 rounded-full transform rotate-6"></div>
+                        </div>
+                        <!-- Eyebrows (furrowed in thought) -->
+                        <div class="eyebrows absolute top-2.5 left-2 right-2 flex justify-between px-0.5">
+                            <div class="w-2.5 h-0.5 bg-neutral-400 rounded-full transform rotate-12"></div>
+                            <div class="w-2.5 h-0.5 bg-neutral-400 rounded-full transform -rotate-12"></div>
+                        </div>
+                    </div>
+                    <!-- Beard -->
+                    <div class="beard absolute top-8 left-1/2 -translate-x-1/2 w-14 h-12 overflow-hidden">
+                        <div class="beard-inner w-14 h-20 bg-gradient-to-b from-gray-200 to-white rounded-b-full -mt-4"></div>
+                    </div>
+                </div>
+
+                <!-- Body/Robe -->
+                <div class="robe relative w-20 mx-auto -mt-2">
+                    <div class="robe-body w-20 h-20 bg-gradient-to-b from-indigo-500 to-purple-600 rounded-t-lg rounded-b-3xl relative">
+                        <!-- Arm (hand on chin) -->
+                        <div class="arm absolute -left-2 top-2 w-6 h-10 bg-gradient-to-b from-indigo-500 to-purple-600 rounded-full transform rotate-45 origin-bottom-right"></div>
+                        <!-- Hand on chin -->
+                        <div class="hand absolute -left-1 -top-4 w-4 h-4 bg-amber-100 rounded-full animate-think-hand"></div>
+                        <!-- Robe detail -->
+                        <div class="absolute inset-x-4 top-4 bottom-4 border-l-2 border-r-2 border-yellow-300/30 rounded-lg"></div>
+                    </div>
+                </div>
+
+                <!-- Floating stars around -->
+                <div class="stars absolute -inset-8 pointer-events-none">
+                    <span class="absolute top-2 left-0 text-yellow-300 text-xs animate-twinkle" style="animation-delay: 0s;">✦</span>
+                    <span class="absolute top-8 right-0 text-purple-300 text-xs animate-twinkle" style="animation-delay: 0.5s;">✧</span>
+                    <span class="absolute bottom-4 left-2 text-indigo-300 text-xs animate-twinkle" style="animation-delay: 1s;">✦</span>
+                    <span class="absolute bottom-0 right-4 text-amber-300 text-xs animate-twinkle" style="animation-delay: 1.5s;">✧</span>
+                </div>
+            </div>
+
+            <!-- Caption -->
+            <p class="text-xs text-center mt-3 font-medium text-purple-300/80 animate-pulse-slow">Contemplating...</p>
         </div>
     </div>
 </div>
@@ -324,6 +443,56 @@
 
     .animate-refresh-text {
         animation: text-flash 0.6s ease-in-out;
+    }
+
+    /* Thinking God Animations */
+    @keyframes float-god {
+        0%, 100% { transform: translateY(0) rotate(-2deg); }
+        50% { transform: translateY(-8px) rotate(2deg); }
+    }
+
+    @keyframes float-bubble {
+        0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+        50% { transform: translateY(-8px) scale(1.1); opacity: 0.8; }
+    }
+
+    @keyframes think-hand {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-2px); }
+    }
+
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.3; transform: scale(0.8); }
+        50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    @keyframes pulse-slow {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+    }
+
+    .animate-float-god {
+        animation: float-god 3s ease-in-out infinite;
+    }
+
+    .animate-float-bubble {
+        animation: float-bubble 2s ease-in-out infinite;
+    }
+
+    .animate-think-hand {
+        animation: think-hand 1.5s ease-in-out infinite;
+    }
+
+    .animate-twinkle {
+        animation: twinkle 2s ease-in-out infinite;
+    }
+
+    .animate-pulse-slow {
+        animation: pulse-slow 2s ease-in-out infinite;
+    }
+
+    #thinking-god.visible {
+        opacity: 1 !important;
     }
 </style>
 
@@ -492,32 +661,61 @@ Best opportunity: TICKER because [reason]`;
         ['openai', 'anthropic', 'google', 'grok'].forEach(provider => {
             const connectionEl = document.getElementById(`${provider}-connection`);
             const modelStatusEl = document.getElementById(`${provider}-model-status`);
-            const connectionLabel = document.getElementById(`${provider}-connection-label`);
+            const disconnectBtn = document.getElementById(`${provider}-disconnect`);
 
             if (apiKeys[provider]) {
+                // Connected state - show green circle and X button
                 connectionEl.classList.remove('bg-red-500');
                 connectionEl.classList.add('bg-green-500');
                 if (modelStatusEl) {
                     modelStatusEl.classList.remove('bg-gray-600');
                     modelStatusEl.classList.add('bg-green-500');
                 }
-                // Make label clickable
-                if (connectionLabel) {
-                    connectionLabel.classList.add('cursor-pointer', 'hover:text-red-400');
+                if (disconnectBtn) {
+                    disconnectBtn.classList.remove('hidden');
                 }
             } else {
+                // Disconnected state - show red circle and hide X button
                 connectionEl.classList.remove('bg-green-500');
                 connectionEl.classList.add('bg-red-500');
                 if (modelStatusEl) {
                     modelStatusEl.classList.remove('bg-green-500');
                     modelStatusEl.classList.add('bg-gray-600');
                 }
-                // Remove clickable styling
-                if (connectionLabel) {
-                    connectionLabel.classList.remove('cursor-pointer', 'hover:text-red-400');
+                if (disconnectBtn) {
+                    disconnectBtn.classList.add('hidden');
                 }
             }
         });
+    }
+
+    // Handle disconnect button clicks
+    document.querySelectorAll('.disconnect-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const provider = this.dataset.provider;
+            const input = document.getElementById(`${provider}-key`);
+
+            // Clear the API key from memory and storage
+            delete apiKeys[provider];
+            if (input) {
+                input.value = '';
+                input.placeholder = getDefaultPlaceholder(provider);
+            }
+            saveApiKeysIfRemembered();
+            updateConnectionStatus();
+            updateProviderHighlight();
+        });
+    });
+
+    // Helper to get default placeholder for each provider
+    function getDefaultPlaceholder(provider) {
+        const placeholders = {
+            'openai': 'sk-...',
+            'anthropic': 'sk-ant-...',
+            'google': 'AIza...',
+            'grok': 'xai-...'
+        };
+        return placeholders[provider] || 'API Key';
     }
 
     // Handle clicking on connection labels to disconnect
@@ -546,13 +744,6 @@ Best opportunity: TICKER because [reason]`;
                 apiKeyLabel.classList.add('text-gray-300');
             }
 
-            // Reset status indicator in API Keys section
-            const statusEl = document.getElementById(`${provider}-status`);
-            if (statusEl) {
-                statusEl.classList.remove('bg-green-500');
-                statusEl.classList.add('bg-gray-600');
-            }
-
             // Update all status indicators
             updateConnectionStatus();
             updateProviderHighlight();
@@ -577,32 +768,19 @@ Best opportunity: TICKER because [reason]`;
     // Initialize API key inputs and status indicators
     apiKeyInputs.forEach(input => {
         const provider = input.dataset.provider;
-        const statusEl = document.getElementById(`${provider}-status`);
 
         // Load saved key
         if (apiKeys[provider]) {
             input.value = apiKeys[provider];
-            statusEl.classList.remove('bg-gray-600');
-            statusEl.classList.add('bg-green-500');
-            // Set label to green for saved keys
-            const labelEl = input.parentElement.querySelector('label');
-            labelEl.classList.remove('text-gray-300');
-            labelEl.classList.add('text-green-400');
         }
 
         // Save key on change and update status
         input.addEventListener('input', function () {
-            const labelEl = this.parentElement.querySelector('label');
-
             if (this.value) {
                 apiKeys[provider] = this.value;
             } else {
-                // Key was deleted - reset label color to original
+                // Key was deleted
                 delete apiKeys[provider];
-                labelEl.classList.remove('text-green-400');
-                labelEl.classList.add('text-gray-300');
-                statusEl.classList.remove('bg-green-500');
-                statusEl.classList.add('bg-gray-600');
             }
             saveApiKeysIfRemembered();
 
@@ -616,12 +794,9 @@ Best opportunity: TICKER because [reason]`;
             if (e.key === 'Enter') {
                 e.preventDefault();
                 const key = this.value.trim();
-                const labelEl = this.parentElement.querySelector('label');
 
                 if (!key) {
                     this.placeholder = 'Hit Enter to Send';
-                    labelEl.classList.remove('text-green-400');
-                    labelEl.classList.add('text-gray-300');
                     delete apiKeys[provider];
                     saveApiKeysIfRemembered();
                     updateConnectionStatus();
@@ -645,29 +820,19 @@ Best opportunity: TICKER because [reason]`;
                     const result = await response.json();
 
                     if (result.valid) {
-                        // Valid key - green label, save key
-                        labelEl.classList.remove('text-gray-300');
-                        labelEl.classList.add('text-green-400');
+                        // Valid key - save and update status
                         this.placeholder = 'Hit Enter to Send';
                         apiKeys[provider] = key;
                         saveApiKeysIfRemembered();
-                        statusEl.classList.remove('bg-gray-600');
-                        statusEl.classList.add('bg-green-500');
                     } else {
-                        // Invalid key - show error, reset label
-                        labelEl.classList.remove('text-green-400');
-                        labelEl.classList.add('text-gray-300');
+                        // Invalid key - show error
                         this.placeholder = 'Invalid Key';
                         this.value = '';
                         delete apiKeys[provider];
                         saveApiKeysIfRemembered();
-                        statusEl.classList.remove('bg-green-500');
-                        statusEl.classList.add('bg-gray-600');
                     }
                 } catch (err) {
-                    // Network error - reset label
-                    labelEl.classList.remove('text-green-400');
-                    labelEl.classList.add('text-gray-300');
+                    // Network error
                     this.placeholder = 'Validation Failed';
                     this.value = '';
                 }
@@ -862,8 +1027,8 @@ Best opportunity: TICKER because [reason]`;
                     <span class="uber-status text-xs text-neutral-500">Aggregating responses...</span>
                 </div>
                 <!-- Response Content -->
-                <div class="uber-response-content px-4 py-4 hidden">
-                    <div class="text-gray-100 text-sm uber-response"></div>
+                <div class="uber-response-content px-4 py-4 hidden" style="overflow: visible;">
+                    <div class="text-gray-100 text-sm uber-response" style="overflow: visible;"></div>
                 </div>
             </div>
         `;
@@ -891,6 +1056,13 @@ Best opportunity: TICKER because [reason]`;
         // Show processing state
         submitBtn.disabled = true;
         if (sendBtnBottom) sendBtnBottom.disabled = true;
+
+        // Show thinking god character
+        const thinkingGod = document.getElementById('thinking-god');
+        if (thinkingGod) {
+            thinkingGod.classList.remove('hidden');
+            setTimeout(() => thinkingGod.classList.add('visible'), 50);
+        }
 
         // Switch to chat view if on welcome screen
         if (!welcomeScreen.classList.contains('hidden')) {
@@ -1189,6 +1361,13 @@ Best opportunity: TICKER because [reason]`;
             // Re-enable buttons
             sendBtn.disabled = false;
             if (sendBtnBottom) sendBtnBottom.disabled = false;
+
+            // Hide thinking god character
+            const thinkingGod = document.getElementById('thinking-god');
+            if (thinkingGod) {
+                thinkingGod.classList.remove('visible');
+                setTimeout(() => thinkingGod.classList.add('hidden'), 500);
+            }
         }
     }
 
@@ -1663,19 +1842,14 @@ Best opportunity: TICKER because [reason]`;
     const uberAnswerToggle = document.getElementById('uber-answer-toggle');
     const debatedModeToggle = document.getElementById('debated-mode-toggle');
     const financialModeToggle = document.getElementById('financial-mode-toggle');
-    const aggregatorSettingsEl = document.getElementById('aggregator-settings');
-    const aggregatorToggleBtn = document.getElementById('aggregator-toggle');
-    const aggregatorToggleIcon = document.getElementById('aggregator-toggle-icon');
 
-    // Helper to update pill style
+    // Helper to update pill style (using CSS active class)
     function updatePillStyle(pill, isActive) {
         if (isActive) {
-            pill.classList.remove('bg-neutral-800', 'text-neutral-400', 'border-neutral-700');
-            pill.classList.add('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500/30');
+            pill.classList.add('active');
             pill.dataset.active = 'true';
         } else {
-            pill.classList.remove('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500/30');
-            pill.classList.add('bg-neutral-800', 'text-neutral-400', 'border-neutral-700');
+            pill.classList.remove('active');
             pill.dataset.active = 'false';
         }
     }
@@ -1695,20 +1869,59 @@ Best opportunity: TICKER because [reason]`;
         updateUberAnswerToggleUI();
     });
 
-    // Aggregator settings toggle
-    if (aggregatorToggleBtn && aggregatorSettingsEl) {
-        aggregatorToggleBtn.addEventListener('click', function() {
-            const isHidden = aggregatorSettingsEl.classList.contains('hidden');
-            aggregatorSettingsEl.classList.toggle('hidden');
-            aggregatorToggleIcon.style.transform = isHidden ? 'rotate(180deg)' : '';
-        });
+    // Helper to format model name (capitalize, limit to 3 words)
+    function formatModelName(model) {
+        return model.replace(/-/g, ' ')
+            .split(' ')
+            .slice(0, 3)
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    }
+
+    // Provider display names
+    const providerDisplayNames = {
+        'openai': 'OpenAI',
+        'anthropic': 'Anthropic',
+        'google': 'Google',
+        'grok': 'Grok'
+    };
+
+    // Update synthesizer provider dropdown to only show providers with valid API keys
+    function updateSynthesizerProviders() {
+        const currentValue = aggregatorProvider.value;
+        const availableProviders = ['openai', 'anthropic', 'google', 'grok'].filter(p => apiKeys[p]);
+
+        // Build options HTML
+        aggregatorProvider.innerHTML = availableProviders
+            .map(p => `<option value="${p}">${providerDisplayNames[p]}</option>`)
+            .join('');
+
+        // If no providers available, show placeholder
+        if (availableProviders.length === 0) {
+            aggregatorProvider.innerHTML = '<option value="" disabled>No API keys</option>';
+            aggregatorModel.innerHTML = '<option value="" disabled>—</option>';
+            return;
+        }
+
+        // Restore previous selection if still valid, otherwise pick first available
+        if (availableProviders.includes(currentValue)) {
+            aggregatorProvider.value = currentValue;
+        } else if (availableProviders.includes(savedAggregatorProvider)) {
+            aggregatorProvider.value = savedAggregatorProvider;
+        } else {
+            aggregatorProvider.value = availableProviders[0];
+        }
+
+        updateAggregatorModels();
     }
 
     // Update aggregator model dropdown based on provider
     function updateAggregatorModels() {
         const provider = aggregatorProvider.value;
+        if (!provider) return;
+
         const models = providerModels[provider] || [];
-        aggregatorModel.innerHTML = models.map(m => `<option value="${m}">${m}</option>`).join('');
+        aggregatorModel.innerHTML = models.map(m => `<option value="${m}">${formatModelName(m)}</option>`).join('');
 
         // Restore saved model if it exists for this provider
         if (savedAggregatorModel && models.includes(savedAggregatorModel)) {
@@ -1727,8 +1940,8 @@ Best opportunity: TICKER because [reason]`;
 
     // Note: aggregatorEnabled change is handled by uberAnswerToggle click handler
 
-    // Initialize aggregator models
-    updateAggregatorModels();
+    // Initialize synthesizer providers and models
+    updateSynthesizerProviders();
 
     // Function to call the aggregator
     async function callAggregator(userQuestion, responses) {

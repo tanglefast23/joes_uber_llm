@@ -34,11 +34,10 @@ PROVIDER_MODELS: dict[str, list[str]] = {
         "gpt-4o-mini",
     ],
     "anthropic": [
-        "claude-opus-4-5-20251101",
-        "claude-sonnet-4-5-20250929",
         "claude-haiku-4-5-20251001",
-        "claude-sonnet-4-20250514",
-        "claude-opus-4-20250514",
+        "claude-3-5-sonnet-20241022",
+        "claude-3-5-haiku-20241022",
+        "claude-3-opus-20240229",
     ],
     "google": [
         "gemini-3-flash-preview",
@@ -52,15 +51,15 @@ PROVIDER_MODELS: dict[str, list[str]] = {
         "grok-3-fast",
         "grok-3-mini",
         "grok-3-mini-fast",
-        "grok-2-1212",
-        "grok-2-vision-1212",
+        "grok-2",
+        "grok-2-vision",
     ],
 }
 
 # Default model per provider
 DEFAULT_MODELS: dict[str, str] = {
     "openai": "gpt-5.2",
-    "anthropic": "claude-sonnet-4-5-20250929",
+    "anthropic": "claude-haiku-4-5-20251001",
     "google": "gemini-2.0-flash",
     "grok": "grok-3",
 }

@@ -14,7 +14,12 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from joes_uber_llm.config import DEFAULT_MODELS, PROVIDER_MODELS
-from joes_uber_llm.providers import AnthropicProvider, GoogleProvider, OpenAIProvider
+from joes_uber_llm.providers import (
+    AnthropicProvider,
+    GoogleProvider,
+    GrokProvider,
+    OpenAIProvider,
+)
 from joes_uber_llm.providers.base import BaseProvider, Message
 
 logger = logging.getLogger(__name__)
@@ -32,6 +37,7 @@ PROVIDERS: dict[str, BaseProvider] = {
     "openai": OpenAIProvider(),
     "anthropic": AnthropicProvider(),
     "google": GoogleProvider(),
+    "grok": GrokProvider(),
 }
 
 

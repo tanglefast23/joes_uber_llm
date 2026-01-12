@@ -26,6 +26,10 @@ PROVIDER_MODELS: dict[str, list[str]] = {
         "gpt-5.2-instant",
         "gpt-5.2-thinking",
         "gpt-5.2-pro",
+        "o3",
+        "o3-mini",
+        "o1",
+        "o1-mini",
         "gpt-4o",
         "gpt-4o-mini",
     ],
@@ -43,6 +47,14 @@ PROVIDER_MODELS: dict[str, list[str]] = {
         "gemini-2.5-flash-lite",
         "gemini-2.0-flash",
     ],
+    "grok": [
+        "grok-3",
+        "grok-3-fast",
+        "grok-3-mini",
+        "grok-3-mini-fast",
+        "grok-2-1212",
+        "grok-2-vision-1212",
+    ],
 }
 
 # Default model per provider
@@ -50,6 +62,7 @@ DEFAULT_MODELS: dict[str, str] = {
     "openai": "gpt-5.2",
     "anthropic": "claude-sonnet-4-5-20250929",
     "google": "gemini-2.0-flash",
+    "grok": "grok-3",
 }
 
 

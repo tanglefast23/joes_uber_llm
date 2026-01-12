@@ -40,6 +40,11 @@
             font-family: 'Space Grotesk', system-ui, sans-serif;
         }
 
+        html {
+            overflow: hidden !important;
+            height: 100%;
+        }
+
         .font-display {
             font-family: 'Syne', sans-serif;
         }
@@ -57,17 +62,18 @@
 
         .gradient-bg::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: -50%;
             left: -50%;
-            width: 200%;
-            height: 200%;
+            width: 200vw;
+            height: 200vh;
             background:
                 radial-gradient(ellipse at 20% 30%, var(--coral-glow) 0%, transparent 50%),
                 radial-gradient(ellipse at 80% 70%, var(--violet-glow) 0%, transparent 50%),
                 radial-gradient(ellipse at 50% 50%, var(--lime-glow) 0%, transparent 60%);
             animation: gradient-drift 20s ease-in-out infinite;
             pointer-events: none;
+            z-index: -1;
         }
 
         @keyframes gradient-drift {
@@ -242,7 +248,7 @@
         }
     </style>
 </head>
-<body class="gradient-bg text-gray-100 h-screen overflow-hidden">
+<body class="gradient-bg text-gray-100 h-screen overflow-hidden" style="overflow: hidden !important;">
     {% block content %}{% endblock %}
     {% block scripts %}{% endblock %}
 </body>

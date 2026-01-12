@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="relative h-screen">
+<div class="relative h-screen overflow-hidden">
     <!-- Left Sidebar - Settings (overlay) -->
     <div id="sidebar"
         class="absolute left-0 top-0 h-full z-50 flex flex-col transition-transform duration-300 w-96 overflow-y-auto shadow-2xl -translate-x-full"
@@ -197,7 +197,7 @@
     </div>
 
     <!-- Main Chat Area (full width, fixed position) -->
-    <div class="w-full h-full flex flex-col relative z-10">
+    <div class="w-full h-full flex flex-col relative z-10 overflow-hidden">
         <!-- Welcome Screen with Centered Input -->
         <div id="welcome-screen" class="flex-1 flex flex-col items-center justify-center ml-[250px]">
             <div class="-translate-y-[100px]">

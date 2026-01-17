@@ -11,6 +11,17 @@ All code you write MUST be fully optimized:
 - Follow proper style conventions (maximize code reuse - DRY)
 - No extra code beyond what is absolutely necessary (no technical debt)
 
+## Parallel Task Execution
+
+- **MUST** run non-overlapping tasks in parallel using separate agents
+- When given multiple tasks (e.g., frontend + backend), evaluate if they are independent
+- Independent tasks (no shared files, no dependencies) should use parallel agent execution
+- Examples of parallelizable tasks:
+  - Frontend UI changes + Backend API logic
+  - Database migrations + Documentation updates
+  - Test writing + Linting fixes
+- Use the Task tool to spawn multiple agents concurrently for maximum efficiency
+
 ## Preferred Tools
 
 - Use `uv` for Python package management and to create a `.venv` if not present

@@ -4,13 +4,11 @@
 <div class="relative h-screen overflow-hidden">
     <!-- Left Sidebar - Settings (overlay) -->
     <div id="sidebar"
-        class="absolute left-0 top-0 h-full z-50 flex flex-col transition-transform duration-300 w-96 overflow-y-auto shadow-2xl -translate-x-full"
-        style="background: var(--bg-card); border-right: 1px solid var(--border-subtle);">
+        class="sidebar-modern absolute left-0 top-0 h-full z-50 flex flex-col transition-transform duration-300 w-96 overflow-y-auto shadow-2xl -translate-x-full">
         <!-- Sidebar Header -->
-        <div class="flex items-center justify-between p-5">
-            <span class="font-display text-xl font-bold" style="color: var(--text-primary);">Settings</span>
+        <div class="flex items-center justify-end p-4">
             <button id="sidebar-close-btn"
-                class="btn-playful p-2 rounded-lg transition-colors"
+                class="btn-playful p-2 rounded-lg transition-all hover:bg-white/5"
                 style="color: var(--text-muted);"
                 onmouseover="this.style.color='var(--coral)'"
                 onmouseout="this.style.color='var(--text-muted)'"
@@ -43,129 +41,141 @@
                     $ Finance
                 </button>
             </div>
+            <!-- Mode description text -->
+            <p id="mode-description" class="text-xs mt-2 px-1 transition-all duration-200" style="color: var(--text-muted);">
+                Query all connected LLMs and synthesize responses into one unified answer.
+            </p>
         </div>
 
         <!-- Providers Section - Combined Keys + Models -->
         <div id="sidebar-content" class="flex-1 overflow-y-auto">
-            <div class="px-5 pb-2">
-                <p class="text-xs mb-4" style="color: var(--text-muted);">API keys stored locally in browser</p>
+            <div class="px-5 pb-4">
+                <!-- Section Label -->
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: var(--text-muted);">API Providers</span>
+                    <div class="flex-1 h-px" style="background: linear-gradient(90deg, var(--border-subtle) 0%, transparent 100%);"></div>
+                </div>
 
                 <!-- OpenAI -->
-                <div class="mb-4 provider-row p-3 rounded-xl transition-all hover:scale-[1.01]" data-provider="openai"
-                    style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
+                <div class="mb-3 provider-row provider-card p-3 rounded-xl" data-provider="openai">
                     <div class="flex items-center justify-between mb-2">
                         <span class="flex items-center text-sm font-semibold" style="color: #10a37f;">
-                            <button id="openai-disconnect" data-provider="openai"
-                                class="disconnect-btn hidden text-red-400 hover:text-red-300 mr-1.5 transition-all"
-                                title="Disconnect">✕</button>
-                            <span class="w-2.5 h-2.5 rounded-full mr-2 bg-red-500" id="openai-connection"></span>
+                            <span class="w-2 h-2 rounded-full mr-2 bg-red-500 connection-dot" id="openai-connection"></span>
                             OpenAI
                         </span>
                         <div class="flex items-center gap-2">
                             <select id="openai-model" data-provider="openai"
-                                class="font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
-                                style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                                class="provider-select font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
+                                style="color: var(--text-secondary);">
                                 {% for m in provider_models['openai'] %}
                                 <option value="{{ m }}">{{ (m | replace('-', ' ')).split()[:3] | join(' ') | title }}</option>
                                 {% endfor %}
                             </select>
+                            <button id="openai-disconnect" data-provider="openai"
+                                class="disconnect-btn hidden text-red-400 hover:text-red-300 transition-all"
+                                title="Disconnect">✕</button>
                         </div>
                     </div>
                     <input type="password" id="openai-key" placeholder="sk-..." data-provider="openai"
-                        class="api-key-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none transition-all"
-                        style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle);">
+                        class="api-key-input provider-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none"
+                        style="color: var(--text-primary);">
                 </div>
 
                 <!-- Anthropic -->
-                <div class="mb-4 provider-row p-3 rounded-xl transition-all hover:scale-[1.01]" data-provider="anthropic"
-                    style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
+                <div class="mb-3 provider-row provider-card p-3 rounded-xl" data-provider="anthropic">
                     <div class="flex items-center justify-between mb-2">
                         <span class="flex items-center text-sm font-semibold" style="color: #d4a27f;">
-                            <button id="anthropic-disconnect" data-provider="anthropic"
-                                class="disconnect-btn hidden text-red-400 hover:text-red-300 mr-1.5 transition-all"
-                                title="Disconnect">✕</button>
-                            <span class="w-2.5 h-2.5 rounded-full mr-2 bg-red-500" id="anthropic-connection"></span>
+                            <span class="w-2 h-2 rounded-full mr-2 bg-red-500 connection-dot" id="anthropic-connection"></span>
                             Anthropic
                         </span>
                         <div class="flex items-center gap-2">
                             <select id="anthropic-model" data-provider="anthropic"
-                                class="font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
-                                style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                                class="provider-select font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
+                                style="color: var(--text-secondary);">
                                 {% for m in provider_models['anthropic'] %}
                                 <option value="{{ m }}">{{ (m | replace('-', ' ')).split()[:3] | join(' ') | title }}</option>
                                 {% endfor %}
                             </select>
+                            <button id="anthropic-disconnect" data-provider="anthropic"
+                                class="disconnect-btn hidden text-red-400 hover:text-red-300 transition-all"
+                                title="Disconnect">✕</button>
                         </div>
                     </div>
                     <input type="password" id="anthropic-key" placeholder="sk-ant-..." data-provider="anthropic"
-                        class="api-key-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none transition-all"
-                        style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle);">
+                        class="api-key-input provider-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none"
+                        style="color: var(--text-primary);">
                 </div>
 
                 <!-- Google -->
-                <div class="mb-4 provider-row p-3 rounded-xl transition-all hover:scale-[1.01]" data-provider="google"
-                    style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
+                <div class="mb-3 provider-row provider-card p-3 rounded-xl" data-provider="google">
                     <div class="flex items-center justify-between mb-2">
                         <span class="flex items-center text-sm font-semibold" style="color: #4285f4;">
-                            <button id="google-disconnect" data-provider="google"
-                                class="disconnect-btn hidden text-red-400 hover:text-red-300 mr-1.5 transition-all"
-                                title="Disconnect">✕</button>
-                            <span class="w-2.5 h-2.5 rounded-full mr-2 bg-red-500" id="google-connection"></span>
+                            <span class="w-2 h-2 rounded-full mr-2 bg-red-500 connection-dot" id="google-connection"></span>
                             Google
                         </span>
                         <div class="flex items-center gap-2">
                             <select id="google-model" data-provider="google"
-                                class="font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
-                                style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                                class="provider-select font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
+                                style="color: var(--text-secondary);">
                                 {% for m in provider_models['google'] %}
                                 <option value="{{ m }}">{{ (m | replace('-', ' ')).split()[:3] | join(' ') | title }}</option>
                                 {% endfor %}
                             </select>
+                            <button id="google-disconnect" data-provider="google"
+                                class="disconnect-btn hidden text-red-400 hover:text-red-300 transition-all"
+                                title="Disconnect">✕</button>
                         </div>
                     </div>
                     <input type="password" id="google-key" placeholder="AIza..." data-provider="google"
-                        class="api-key-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none transition-all"
-                        style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle);">
+                        class="api-key-input provider-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none"
+                        style="color: var(--text-primary);">
                 </div>
 
                 <!-- Grok -->
-                <div class="mb-4 provider-row p-3 rounded-xl transition-all hover:scale-[1.01]" data-provider="grok"
-                    style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
+                <div class="mb-3 provider-row provider-card p-3 rounded-xl" data-provider="grok">
                     <div class="flex items-center justify-between mb-2">
                         <span class="flex items-center text-sm font-semibold" style="color: #f97316;">
-                            <button id="grok-disconnect" data-provider="grok"
-                                class="disconnect-btn hidden text-red-400 hover:text-red-300 mr-1.5 transition-all"
-                                title="Disconnect">✕</button>
-                            <span class="w-2.5 h-2.5 rounded-full mr-2 bg-red-500" id="grok-connection"></span>
+                            <span class="w-2 h-2 rounded-full mr-2 bg-red-500 connection-dot" id="grok-connection"></span>
                             Grok
                         </span>
                         <div class="flex items-center gap-2">
                             <select id="grok-model" data-provider="grok"
-                                class="font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
-                                style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                                class="provider-select font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
+                                style="color: var(--text-secondary);">
                                 {% for m in provider_models['grok'] %}
                                 <option value="{{ m }}">{{ (m | replace('-', ' ')).split()[:3] | join(' ') | title }}</option>
                                 {% endfor %}
                             </select>
+                            <button id="grok-disconnect" data-provider="grok"
+                                class="disconnect-btn hidden text-red-400 hover:text-red-300 transition-all"
+                                title="Disconnect">✕</button>
                         </div>
                     </div>
                     <input type="password" id="grok-key" placeholder="xai-..." data-provider="grok"
-                        class="api-key-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none transition-all"
-                        style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle);">
+                        class="api-key-input provider-input w-full rounded-lg px-3 py-2 text-sm focus:outline-none"
+                        style="color: var(--text-primary);">
+                </div>
+
+                <!-- Divider -->
+                <div class="sidebar-divider"></div>
+
+                <!-- Section Label -->
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: var(--text-muted);">Synthesizer</span>
+                    <div class="flex-1 h-px" style="background: linear-gradient(90deg, var(--border-subtle) 0%, transparent 100%);"></div>
                 </div>
 
                 <!-- Synthesizer Model -->
-                <div class="mb-4 provider-row p-3 rounded-xl transition-all hover:scale-[1.01]" data-provider="synthesizer"
-                    style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
+                <div class="mb-3 provider-row provider-card p-3 rounded-xl" data-provider="synthesizer">
                     <div class="flex items-center justify-between mb-2">
                         <span class="flex items-center text-sm font-semibold" style="color: #a855f7;">
-                            <span class="w-2.5 h-2.5 rounded-full mr-2 bg-purple-500"></span>
-                            Synthesizer
+                            <span class="w-2 h-2 rounded-full mr-2 bg-purple-500"></span>
+                            Model
                         </span>
                         <div class="flex items-center gap-2">
                             <select id="aggregator-provider"
-                                class="font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
-                                style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                                class="provider-select font-mono text-xs px-2 py-1 rounded cursor-pointer focus:outline-none"
+                                style="color: var(--text-secondary);">
                                 <option value="openai">OpenAI</option>
                                 <option value="anthropic" selected>Anthropic</option>
                                 <option value="google">Google</option>
@@ -174,20 +184,24 @@
                         </div>
                     </div>
                     <select id="aggregator-model"
-                        class="w-full font-mono text-xs px-3 py-2 rounded-lg cursor-pointer focus:outline-none"
-                        style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                        class="provider-select w-full font-mono text-xs px-3 py-2 rounded-lg cursor-pointer focus:outline-none"
+                        style="color: var(--text-secondary);">
                         {% for m in provider_models['anthropic'] %}
                         <option value="{{ m }}">{{ (m | replace('-', ' ')).split()[:3] | join(' ') | title }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
+                <!-- Divider -->
+                <div class="sidebar-divider"></div>
+
                 <!-- Remember Keys -->
-                <label class="flex items-center text-xs cursor-pointer mt-3 px-1" style="color: var(--text-muted);">
+                <label class="flex items-center text-xs cursor-pointer px-1 py-2 rounded-lg hover:bg-white/5 transition-colors" style="color: var(--text-secondary);">
                     <input type="checkbox" id="remember-api-keys"
-                        class="w-3 h-3 rounded mr-2" style="accent-color: var(--lime);">
-                    Remember keys
+                        class="w-3.5 h-3.5 rounded mr-2.5" style="accent-color: var(--lime);">
+                    Remember API keys
                 </label>
+                <p class="text-[10px] mt-1 px-1 opacity-60" style="color: var(--text-muted);">Keys stored locally in your browser</p>
             </div>
         </div>
 
@@ -213,7 +227,7 @@
                 <div class="w-full max-w-2xl px-4 animate-fade-up delay-200">
                 <form id="chat-form" class="w-full">
                     <div class="input-glow rounded-2xl px-5 py-4" style="background: var(--bg-card);">
-                        <textarea name="message" id="message-input" rows="3" placeholder="Ask anything..."
+                        <textarea name="message" id="message-input" rows="3" placeholder="Multiple LLMs and one unified answer"
                             class="w-full bg-transparent focus:outline-none resize-none text-lg"
                             style="color: var(--text-primary);"
                             required></textarea>
@@ -295,7 +309,7 @@
         <div id="bottom-input" class="hidden p-4">
             <form id="chat-form-bottom" class="max-w-2xl mx-auto">
                 <div class="bg-neutral-800 rounded-2xl px-4 py-3 border border-neutral-700">
-                    <textarea name="message" id="message-input-bottom" rows="4" placeholder="Ask anything"
+                    <textarea name="message" id="message-input-bottom" rows="4" placeholder="Multiple LLMs and one unified answer"
                         class="w-full bg-transparent text-white placeholder-gray-500 focus:outline-none resize-none text-base"
                         required></textarea>
                     <div class="flex items-center justify-between mt-2">
@@ -656,6 +670,31 @@ Best opportunity: TICKER because [reason]`;
     // API key inputs
     const apiKeyInputs = document.querySelectorAll('.api-key-input');
 
+    // Success chime sound using Web Audio API
+    function playSuccessChime() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+            oscillator.frequency.setValueAtTime(1108.73, audioCtx.currentTime + 0.1); // C#6
+            oscillator.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.2); // E6
+
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.4);
+        } catch (e) {
+            // Audio not supported, silently ignore
+        }
+    }
+
     // Update connection status indicators
     function updateConnectionStatus() {
         ['openai', 'anthropic', 'google', 'grok'].forEach(provider => {
@@ -704,6 +743,7 @@ Best opportunity: TICKER because [reason]`;
             saveApiKeysIfRemembered();
             updateConnectionStatus();
             updateProviderHighlight();
+            updateSynthesizerProviders();
         });
     });
 
@@ -824,6 +864,8 @@ Best opportunity: TICKER because [reason]`;
                         this.placeholder = 'Hit Enter to Send';
                         apiKeys[provider] = key;
                         saveApiKeysIfRemembered();
+                        playSuccessChime();
+                        updateSynthesizerProviders();
                     } else {
                         // Invalid key - show error
                         this.placeholder = 'Invalid Key';
@@ -1374,11 +1416,13 @@ Best opportunity: TICKER because [reason]`;
     // Attach submit handlers to both forms
     chatForm.addEventListener('submit', async function (e) {
         e.preventDefault();
+        hideSidebar();
         await handleChatSubmit(messageInput, sendBtn);
     });
 
     chatFormBottom.addEventListener('submit', async function (e) {
         e.preventDefault();
+        hideSidebar();
         await handleChatSubmit(messageInputBottom, sendBtnBottom);
     });
 
@@ -1854,6 +1898,28 @@ Best opportunity: TICKER because [reason]`;
         }
     }
 
+    // Mode descriptions
+    const modeDescriptions = {
+        synth: 'Query all connected LLMs and synthesize responses into one unified answer.',
+        debate: 'LLMs critique each other\'s responses, then revise their answers for deeper analysis.',
+        finance: 'Analyze stocks with financial metrics, ratings, and cross-model comparisons.'
+    };
+
+    // Update mode description based on active modes
+    function updateModeDescription() {
+        const descEl = document.getElementById('mode-description');
+        if (!descEl) return;
+
+        // Priority: Finance > Debate > Synth (show most specific active mode)
+        if (financialModeEnabled) {
+            descEl.textContent = modeDescriptions.finance;
+        } else if (debatedModeEnabled) {
+            descEl.textContent = modeDescriptions.debate;
+        } else {
+            descEl.textContent = modeDescriptions.synth;
+        }
+    }
+
     // Function to update Uber Answer toggle UI
     function updateUberAnswerToggleUI() {
         updatePillStyle(uberAnswerToggle, aggregatorEnabled.checked);
@@ -2075,18 +2141,36 @@ Best opportunity: TICKER because [reason]`;
         }
     });
 
-    // Financial Mode toggle (pill style)
-    function updateFinancialModeUI() {
-        const placeholder = financialModeEnabled ? 'Enter Stocks to Analyze' : 'Ask anything';
+    // Update input placeholder based on active modes
+    function updateInputPlaceholder() {
+        let placeholder;
+
+        if (financialModeEnabled) {
+            // Finance mode overrides everything
+            placeholder = 'Enter ticker(s) for financial analysis';
+        } else if (debatedModeEnabled) {
+            // Synth + Debate
+            placeholder = 'Multiple LLMs debate and deliver one unified answer';
+        } else {
+            // Synth only (default)
+            placeholder = 'Multiple LLMs and one unified answer';
+        }
+
         messageInput.placeholder = placeholder;
         messageInputBottom.placeholder = placeholder;
+    }
+
+    // Financial Mode toggle (pill style)
+    function updateFinancialModeUI() {
         updatePillStyle(financialModeToggle, financialModeEnabled);
+        updateInputPlaceholder();
     }
 
     financialModeToggle.addEventListener('click', function () {
         financialModeEnabled = !financialModeEnabled;
         localStorage.setItem('financialModeEnabled', financialModeEnabled);
         updateFinancialModeUI();
+        updateModeDescription();
     });
 
     // Initialize Financial Mode UI
@@ -2095,16 +2179,19 @@ Best opportunity: TICKER because [reason]`;
     // Super Uber Answer Mode toggle (pill style)
     function updateDebatedModeUI() {
         updatePillStyle(debatedModeToggle, debatedModeEnabled);
+        updateInputPlaceholder();
     }
 
     debatedModeToggle.addEventListener('click', function () {
         debatedModeEnabled = !debatedModeEnabled;
         localStorage.setItem('debatedModeEnabled', debatedModeEnabled);
         updateDebatedModeUI();
+        updateModeDescription();
     });
 
     // Initialize Super Uber Answer Mode UI
     updateDebatedModeUI();
+    updateModeDescription();
 
     // Remember API Keys checkbox handler
     if (rememberApiKeysCheckbox) {

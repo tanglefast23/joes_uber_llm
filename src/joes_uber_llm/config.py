@@ -22,46 +22,46 @@ class Settings:
 # Available models per provider
 PROVIDER_MODELS: dict[str, list[str]] = {
     "openai": [
-        "gpt-5.2",
-        "gpt-5.2-instant",
-        "gpt-5.2-thinking",
-        "gpt-5.2-pro",
+        "gpt-4.1",
+        "gpt-4.1-mini",
+        "gpt-4.1-nano",
         "o3",
         "o3-mini",
+        "o4-mini",
         "o1",
-        "o1-mini",
         "gpt-4o",
         "gpt-4o-mini",
     ],
     "anthropic": [
-        "claude-haiku-4-5-20251001",
+        "claude-sonnet-4-5",
+        "claude-sonnet-4-5-20250929",
+        "claude-opus-4-1-20250414",
+        "claude-sonnet-4-20250514",
         "claude-3-5-sonnet-20241022",
         "claude-3-5-haiku-20241022",
-        "claude-3-opus-20240229",
     ],
     "google": [
-        "gemini-3-flash-preview",
         "gemini-3-pro-preview",
+        "gemini-3-flash-preview",
+        "gemini-2.5-pro",
         "gemini-2.5-flash",
-        "gemini-2.5-flash-lite",
         "gemini-2.0-flash",
     ],
     "grok": [
-        "grok-3",
-        "grok-3-fast",
-        "grok-3-mini",
-        "grok-3-mini-fast",
-        "grok-2",
-        "grok-2-vision",
+        "grok-4",
+        "grok-3-beta",
+        "grok-3-mini-beta",
+        "grok-2-1212",
+        "grok-2-vision-1212",
     ],
 }
 
 # Default model per provider
 DEFAULT_MODELS: dict[str, str] = {
-    "openai": "gpt-5.2",
-    "anthropic": "claude-haiku-4-5-20251001",
-    "google": "gemini-2.0-flash",
-    "grok": "grok-3",
+    "openai": "gpt-4.1",
+    "anthropic": "claude-sonnet-4-5",
+    "google": "gemini-3-flash-preview",
+    "grok": "grok-3-beta",
 }
 
 
